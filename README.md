@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.tcoded:FoliaLib:[VERSION]"
+    implementation "com.tcoded:FoliaLib:[VERSION]"
 }
 ```
 **!! You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins !!**
