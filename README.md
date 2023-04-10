@@ -47,6 +47,7 @@ dependencies {
 ## How to use
 Create a new instance of the FoliaLib class:
 ```java
+// Assuming "this" is your plugin instance
 FoliaLib foliaLib = new FoliaLib(this);
 ```
 Then you can use the scheduler options:
