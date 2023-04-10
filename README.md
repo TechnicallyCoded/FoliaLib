@@ -1,4 +1,7 @@
 # FoliaLib
+[![GitHub Release](https://img.shields.io/github/release/technicallycoded/FoliaLib.svg?style=flat)]()
+
+Disclaimer:  
 This project is not directly affiliated with Paper team or the Folia project.
 
 ## Description
