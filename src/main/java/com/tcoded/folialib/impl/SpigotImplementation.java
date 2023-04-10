@@ -69,7 +69,7 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runInRegionScope(Location location, Runnable runnable) {
+    public void runInRegion(Location location, Runnable runnable) {
         this.runInGlobalScope(ThreadScope.SYNC, runnable);
     }
 

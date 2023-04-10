@@ -21,7 +21,7 @@ public interface ServerImplementation {
     // Run now
     void runInGlobalScope(ThreadScope scope, Runnable runnable);
 
-    void runInRegionScope(Location location, Runnable runnable);
+    void runInRegion(Location location, Runnable runnable);
 
     void runInPlayerRegion(Player player, Runnable runnable);
 }

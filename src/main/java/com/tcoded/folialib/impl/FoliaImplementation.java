@@ -70,7 +70,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runInRegionScope(Location location, Runnable runnable) {
+    public void runInRegion(Location location, Runnable runnable) {
         //this.globalRegionScheduler.//
         this.plugin.getServer().getRegionScheduler().run(plugin, location, task -> runnable.run());
     }
