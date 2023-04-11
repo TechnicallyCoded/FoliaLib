@@ -1,19 +1,23 @@
 package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
-import com.tcoded.folialib.enums.ThreadScope;
+import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.util.TimeConverter;
+import com.tcoded.folialib.wrapper.WrappedTask;
+import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SpigotImplementation implements ServerImplementation {
 
     private final JavaPlugin plugin;
+    @SuppressWarnings("deprecation")
     private final @NotNull BukkitScheduler scheduler;
 
     public SpigotImplementation(FoliaLib foliaLib) {
@@ -21,60 +25,136 @@ public class SpigotImplementation implements ServerImplementation {
         this.scheduler = plugin.getServer().getScheduler();
     }
 
-
     @Override
-    public void runLater(Runnable runnable, long delay, TimeUnit unit) {
-        this.runLater(ThreadScope.SYNC, runnable, delay, unit);
+    public CompletableFuture<Void> runNextTick(Runnable runnable) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.scheduler.runTask(plugin, () -> {
+            runnable.run();
+            future.complete(null);
+        });
+
+        return future;
     }
 
     @Override
-    public void runLater(ThreadScope scope, Runnable runnable, long delay, TimeUnit unit) {
-        switch (scope) {
-            case ASYNC:
-                this.scheduler.runTaskLaterAsynchronously(plugin, runnable, TimeConverter.toTicks(delay, unit));
-                break;
-            default:
-                this.scheduler.runTaskLater(plugin, runnable, TimeConverter.toTicks(delay, unit));
-                break;
-        }
+    public CompletableFuture<Void> runAsync(Runnable runnable) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.scheduler.runTaskAsynchronously(plugin, () -> {
+            runnable.run();
+            future.complete(null);
+        });
+
+        return future;
     }
 
     @Override
-    public void runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
-        this.runTimer(ThreadScope.SYNC, runnable, delay, period, unit);
+    public WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskLater(plugin, runnable, TimeConverter.toTicks(delay, unit))
+        );
     }
 
     @Override
-    public void runTimer(ThreadScope scope, Runnable runnable, long delay, long period, TimeUnit unit) {
-        switch (scope) {
-            case ASYNC:
-                this.scheduler.runTaskTimerAsynchronously(plugin, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
-                break;
-            default:
-                this.scheduler.runTaskTimer(plugin, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
-                break;
-        }
+    public WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskLaterAsynchronously(plugin, runnable, TimeConverter.toTicks(delay, unit))
+        );
     }
 
     @Override
-    public void runInGlobalScope(ThreadScope scope, Runnable runnable) {
-        switch (scope) {
-            case ASYNC:
-                this.scheduler.runTaskAsynchronously(plugin, runnable);
-                break;
-            default:
-                this.scheduler.runTask(plugin, runnable);
-                break;
-        }
+    public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskTimer(
+                        plugin, runnable,
+                        TimeConverter.toTicks(delay, unit),
+                        TimeConverter.toTicks(period, unit))
+        );
     }
 
     @Override
-    public void runInRegion(Location location, Runnable runnable) {
-        this.runInGlobalScope(ThreadScope.SYNC, runnable);
+    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskTimerAsynchronously(
+                        plugin, runnable,
+                        TimeConverter.toTicks(delay, unit),
+                        TimeConverter.toTicks(period, unit))
+        );
     }
 
     @Override
-    public void runInPlayerRegion(Player player, Runnable runnable) {
-        this.runInGlobalScope(ThreadScope.SYNC, runnable);
+    public CompletableFuture<Void> runAtLocation(Location location, Runnable runnable) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.scheduler.runTask(plugin, () -> {
+            runnable.run();
+            future.complete(null);
+        });
+
+        return future;
+    }
+
+    @Override
+    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskLater(plugin, runnable, TimeConverter.toTicks(delay, unit))
+        );
+    }
+
+    @Override
+    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskTimer(
+                        plugin, runnable,
+                        TimeConverter.toTicks(delay, unit),
+                        TimeConverter.toTicks(period, unit))
+        );
+    }
+
+    @Override
+    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Runnable runnable) {
+        CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
+
+        this.scheduler.runTask(plugin, () -> {
+            runnable.run();
+            future.complete(EntityTaskResult.SUCCESS);
+        });
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Runnable runnable, Runnable fallback) {
+        CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
+
+        this.scheduler.runTask(plugin, () -> {
+            if (entity.isValid()) {
+                runnable.run();
+                future.complete(EntityTaskResult.SUCCESS);
+            } else {
+                fallback.run();
+                future.complete(EntityTaskResult.ENTITY_RETIRED);
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskLater(plugin, runnable, TimeConverter.toTicks(delay, unit))
+        );
+    }
+
+    @Override
+    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
+        return new WrappedBukkitTask(
+                this.scheduler.runTaskTimer(
+                        plugin, runnable,
+                        TimeConverter.toTicks(delay, unit),
+                        TimeConverter.toTicks(period, unit))
+        );
     }
 }

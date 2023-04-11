@@ -14,24 +14,32 @@ public class FoliaLib {
     public FoliaLib(JavaPlugin plugin) {
         this.plugin = plugin;
 
-        String version = plugin.getServer().getVersion();
+        // Find the implementation type based on the class names
+        ImplementationType foundType = ImplementationType.UNKNOWN;
+        typeLoop:
+        for (ImplementationType type : ImplementationType.values()) {
+            String[] classNames = type.getClassNames();
 
-        // Init implementation based on server version string
-        if (version.startsWith("git-Folia-")) {
-            this.implementationType = ImplementationType.FOLIA;
-            this.implementation = new FoliaImplementation(this);
+            // Check if any of the class names are present
+            for (String className : classNames) {
+                try {
+                    // Try to load the class
+                    Class.forName(className);
+
+                    // Found the server type, remember that and break the loop
+                    foundType = type;
+                    break typeLoop;
+                } catch (ClassNotFoundException ignored) {}
+            }
         }
-        else if (version.startsWith("git-Paper-")) {
-            this.implementationType = ImplementationType.PAPER;
-            this.implementation = new PaperImplementation(this);
-        }
-        else if (version.contains("-Spigot-")) {
-            this.implementationType = ImplementationType.SPIGOT;
-            this.implementation = new SpigotImplementation(this);
-        }
-        else {
-            this.implementationType = ImplementationType.UNKNOWN;
-            this.implementation = new UnsupportedImplementation(this);
+
+        // Apply the implementation based on the type
+        this.implementationType = foundType;
+        switch (foundType) {
+            case FOLIA -> this.implementation = new FoliaImplementation(this);
+            case PAPER -> this.implementation = new PaperImplementation(this);
+            case SPIGOT -> this.implementation = new SpigotImplementation(this);
+            default -> this.implementation = new UnsupportedImplementation(this);
         }
     }
 
