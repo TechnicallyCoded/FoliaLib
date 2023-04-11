@@ -157,4 +157,14 @@ public class SpigotImplementation implements ServerImplementation {
                         TimeConverter.toTicks(period, unit))
         );
     }
+
+    @Override
+    public void cancelTask(WrappedTask task) {
+        task.cancel();
+    }
+
+    @Override
+    public void cancelAllTasks() {
+        this.scheduler.cancelTasks(plugin);
+    }
 }

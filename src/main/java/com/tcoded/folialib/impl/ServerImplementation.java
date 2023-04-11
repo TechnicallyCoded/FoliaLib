@@ -166,4 +166,15 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Cancel a task
+     * @param task Task to cancel
+     */
+    void cancelTask(WrappedTask task);
+
+    /**
+     * Cancel all tasks
+     */
+    void cancelAllTasks();
 }

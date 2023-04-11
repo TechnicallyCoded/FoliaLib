@@ -7,7 +7,9 @@ import com.tcoded.folialib.wrapper.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -180,5 +182,16 @@ public class FoliaImplementation implements ServerImplementation {
                         TimeConverter.toTicks(period, unit)
                 )
         );
+    }
+
+    @Override
+    public void cancelTask(WrappedTask task) {
+        task.cancel();
+    }
+
+    @Override
+    public void cancelAllTasks() {
+        this.globalRegionScheduler.cancelTasks(plugin);
+        this.asyncScheduler.cancelTasks(plugin);
     }
 }
