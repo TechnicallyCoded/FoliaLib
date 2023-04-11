@@ -53,31 +53,35 @@ Create a new instance of the FoliaLib class:
 // Assuming "this" is your plugin instance
 FoliaLib foliaLib = new FoliaLib(this);
 ```
-Then you can use the scheduler options:
+Here are some examples of how to use the library:
 ```java
 // Remember that 20 ticks = 1000 milliseconds, and 20 * 50L = 1000L
 
-// On a spigot server, runTimer() will run on the main thread
-// On a folia server, runTimer() will run using the AsyncScheduler
-foliaLib.getImpl().runTimer(() -> {/* Code */}, 0L, 20 * 50L, TimeUnit.MILLISECONDS);
-
-// You can also specify the thread that you want it to run on
-// On a Folia server, the SYNC option will run using the GlobalRegionScheduler 
+// On a folia server, runNextTick() will run using the GlobalRegionScheduler
 //   !! This does not make it safe to use for players or block changes !!
 //   Use other methods below for handling those
 //   This should only be used for updating the following (see GlobalRegionScheduler.java for more info)
 //     - world day time, world game time, weather cycle, sleep night skipping, executing commands for console, and other misc
-// On a spigot server, the SYNC option will run on the main thread
-// In both cases, the ASYNC option will run asynchronously
-foliaLib.getImpl().runTimer(ThreadScope.ASYNC, () -> {/* Code */}, 0L, 20 * 50L, TimeUnit.MILLISECONDS);
+// On a Spigot server, runNextTick() will run on the main thread
+foliaLib.getImpl().runNextTick(() -> {/* Code */});
+
+// In both cases, this method will run asynchronously
+foliaLib.getImpl().runAsync(() -> {/* Code */});
+
+// On a Folia server, this method will run using the GlobalRegionScheduler
+// On a Spigot server, this method will run on the main thread
+foliaLib.getImpl().runTimer(() -> {/* Code */}, 0L, 20 * 50L, TimeUnit.MILLISECONDS);
+
+// In both cases, this method will run asynchronously
+foliaLib.getImpl().runTimerAsync(() -> {/* Code */}, 0L, 20 * 50L, TimeUnit.MILLISECONDS);
 
 // On a folia server, this will run the code using the RegionScheduler that is appropriate for the location
 // On a spigot server, this will run the code on the main thread
-foliaLib.getImpl().runInRegion(location, () -> {/* Code */});
+foliaLib.getImpl().runAtLocation(location, () -> {/* Code */});
 
-// On a folia server, you need to run code that affects a player or the world in a region.
+// On a folia server, this will run the code using the RegionScheduler that is appropriate for the entity
 // On a spigot server, this will just run the code on the main thread
-foliaLib.getImpl().runInPlayerRegion(player, () -> {/* Code */});
+foliaLib.getImpl().runAtEntity(entity, () -> {/* Code */});
 ```
 
 ## License
