@@ -79,7 +79,7 @@ foliaLib.getImpl().runTimerAsync(() -> {/* Code */}, 0L, 20 * 50L, TimeUnit.MILL
 // On a spigot server, this will run the code on the main thread
 foliaLib.getImpl().runAtLocation(location, () -> {/* Code */});
 
-// On a folia server, this will run the code using the RegionScheduler that is appropriate for the entity
+// On a folia server, this will run the code using the EntityScheduler that is appropriate for the entity
 // On a spigot server, this will just run the code on the main thread
 foliaLib.getImpl().runAtEntity(entity, () -> {/* Code */});
 ```
