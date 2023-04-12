@@ -222,6 +222,7 @@ public class SpigotImplementation implements ServerImplementation {
                 e.printStackTrace();
             }
         }
+
         // Fallback to null
         return null;
     }
