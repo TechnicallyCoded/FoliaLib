@@ -200,4 +200,10 @@ public interface ServerImplementation {
      * @return Player instance
      */
     Player getPlayer(UUID uuid);
+
+    /**
+     * Teleport a player to a location async
+     * @return Future when the teleport is completed or failed
+     */
+    CompletableFuture<Boolean> teleportAsync(Player player, Location location);
 }

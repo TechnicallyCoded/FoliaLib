@@ -214,4 +214,9 @@ public class FoliaImplementation implements ServerImplementation {
         // This is thread-safe in folia
         return this.plugin.getServer().getPlayer(uuid);
     }
+
+    @Override
+    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+        return player.teleportAsync(location);
+    }
 }

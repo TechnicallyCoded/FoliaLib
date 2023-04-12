@@ -226,4 +226,20 @@ public class SpigotImplementation implements ServerImplementation {
         // Fallback to null
         return null;
     }
+
+    @Override
+    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        this.runAtEntity(player, () -> {
+            if (player.isValid() && player.isOnline()) {
+                player.teleport(location);
+                future.complete(true);
+            } else {
+                future.complete(false);
+            }
+        });
+
+        return future;
+    }
 }
