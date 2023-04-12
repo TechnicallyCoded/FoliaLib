@@ -7,11 +7,14 @@ import com.tcoded.folialib.wrapper.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class SpigotImplementation implements ServerImplementation {
@@ -166,5 +169,60 @@ public class SpigotImplementation implements ServerImplementation {
     @Override
     public void cancelAllTasks() {
         this.scheduler.cancelTasks(plugin);
+    }
+
+    @Override
+    public Player getPlayer(String name) {
+        // Already on the main thread
+        if (this.plugin.getServer().isPrimaryThread()) {
+            return this.plugin.getServer().getPlayer(name);
+        }
+        // Not on the main thread, we need to wait until the next tick
+        else {
+            try {
+                return this.scheduler.callSyncMethod(plugin, () -> this.plugin.getServer().getPlayer(name)).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // Fallback to null
+        return null;
+    }
+
+    @Override
+    public Player getPlayerExact(String name) {
+        // Already on the main thread
+        if (this.plugin.getServer().isPrimaryThread()) {
+            return this.plugin.getServer().getPlayerExact(name);
+        }
+        // Not on the main thread, we need to wait until the next tick
+        else {
+            try {
+                return this.scheduler.callSyncMethod(plugin, () -> this.plugin.getServer().getPlayerExact(name)).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // Fallback to null
+        return null;
+    }
+
+    @SuppressWarnings("DuplicatedCode")
+    @Override
+    public Player getPlayer(UUID uuid) {
+        // Already on the main thread
+        if (this.plugin.getServer().isPrimaryThread()) {
+            return this.plugin.getServer().getPlayer(uuid);
+        }
+        // Not on the main thread, we need to wait until the next tick
+        else {
+            try {
+                return this.scheduler.callSyncMethod(plugin, () -> this.plugin.getServer().getPlayer(uuid)).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // Fallback to null
+        return null;
     }
 }

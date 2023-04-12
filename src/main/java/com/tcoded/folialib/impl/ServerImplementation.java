@@ -4,7 +4,9 @@ import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.wrapper.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -177,4 +179,25 @@ public interface ServerImplementation {
      * Cancel all tasks
      */
     void cancelAllTasks();
+
+    /**
+     * Get a player by name (approximately)
+     * @param name Name of the player
+     * @return Player instance
+     */
+    Player getPlayer(String name);
+
+    /**
+     * Get a player by name (exactly)
+     * @param name Name of the player
+     * @return Player instance
+     */
+    Player getPlayerExact(String name);
+
+    /**
+     * Get a player by UUID
+     * @param uuid UUID of the player
+     * @return Player instance
+     */
+    Player getPlayer(UUID uuid);
 }
