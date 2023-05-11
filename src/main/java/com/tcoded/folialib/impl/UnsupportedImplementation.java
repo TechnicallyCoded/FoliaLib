@@ -13,16 +13,11 @@ public class UnsupportedImplementation extends SpigotImplementation {
         JavaPlugin plugin = foliaLib.getPlugin();
         Logger logger = plugin.getLogger();
 
-        logger.warning(
-                String.format("""
-                                            
-                                ---------------------------------------------------------------------
-                                FoliaLib does not support this server software! (%s)
-                                FoliaLib will attempt to use the default spigot implementation.
-                                ---------------------------------------------------------------------
-                                """,
-                        plugin.getServer().getVersion()
-                )
+        logger.warning("\n" +
+                "---------------------------------------------------------------------\n" +
+                "FoliaLib does not support this server software! (" + plugin.getServer().getVersion() + ")\n" +
+                "FoliaLib will attempt to use the default spigot implementation.\n" +
+                "---------------------------------------------------------------------\n"
         );
     }
 }

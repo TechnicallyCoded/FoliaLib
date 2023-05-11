@@ -36,10 +36,18 @@ public class FoliaLib {
         // Apply the implementation based on the type
         this.implementationType = foundType;
         switch (foundType) {
-            case FOLIA -> this.implementation = new FoliaImplementation(this);
-            case PAPER -> this.implementation = new PaperImplementation(this);
-            case SPIGOT -> this.implementation = new SpigotImplementation(this);
-            default -> this.implementation = new UnsupportedImplementation(this);
+            case FOLIA:
+                this.implementation = new FoliaImplementation(this);
+                break;
+            case PAPER:
+                this.implementation = new PaperImplementation(this);
+                break;
+            case SPIGOT:
+                this.implementation = new SpigotImplementation(this);
+                break;
+            default:
+                this.implementation = new UnsupportedImplementation(this);
+                break;
         }
     }
 
