@@ -7,10 +7,14 @@ import com.tcoded.folialib.wrapper.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -180,5 +184,39 @@ public class FoliaImplementation implements ServerImplementation {
                         TimeConverter.toTicks(period, unit)
                 )
         );
+    }
+
+    @Override
+    public void cancelTask(WrappedTask task) {
+        task.cancel();
+    }
+
+    @Override
+    public void cancelAllTasks() {
+        this.globalRegionScheduler.cancelTasks(plugin);
+        this.asyncScheduler.cancelTasks(plugin);
+    }
+
+    @Override
+    public Player getPlayer(String name) {
+        // This is thread-safe in folia
+        return this.plugin.getServer().getPlayer(name);
+    }
+
+    @Override
+    public Player getPlayerExact(String name) {
+        // This is thread-safe in folia
+        return this.plugin.getServer().getPlayerExact(name);
+    }
+
+    @Override
+    public Player getPlayer(UUID uuid) {
+        // This is thread-safe in folia
+        return this.plugin.getServer().getPlayer(uuid);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+        return player.teleportAsync(location);
     }
 }
