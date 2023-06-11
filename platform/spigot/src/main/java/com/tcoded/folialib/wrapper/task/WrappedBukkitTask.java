@@ -1,5 +1,6 @@
 package com.tcoded.folialib.wrapper.task;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,8 +19,8 @@ public class WrappedBukkitTask implements WrappedTask {
 
     @Override
     public boolean isCancelled() {
-        // todo: this is not correct
-        return false; // this.task.isCancelled();
+        int taskId = this.task.getTaskId();
+        return Bukkit.getScheduler().getPendingTasks().stream().noneMatch(task -> task.getTaskId() == taskId);
     }
 
     @Override
