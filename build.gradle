@@ -1,30 +1,65 @@
-plugins {
-    id 'java'
-}
-
-group 'com.tcoded'
-version '0.2.3'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://repo.papermc.io/repository/maven-public/'
+buildscript {
+    ext {
+        revision = '0.2.4'
     }
 }
 
-dependencies {
-    implementation 'dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT'
-    implementation 'org.jetbrains:annotations:23.0.0'
+allprojects {
+    apply plugin: 'java'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    version = '0.2.4'
+
+    repositories {
+
+        mavenCentral()
+
+        maven {
+            url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        }
+
+        maven {
+            url 'https://hub.spigotmc.org/nexus/content/repositories/public/'
+        }
+
+        maven {
+            url = "https://repo.papermc.io/repository/maven-public/"
+        }
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    dependencies {
+        implementation 'org.jetbrains:annotations:23.0.0'
+
+        testImplementation platform('org.junit:junit-bom:5.9.1')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
-test {
-    useJUnitPlatform()
+group 'com.tcoded'
+
+def baseName
+
+subprojects.each { subproject -> evaluationDependsOn(subproject.path)}
+tasks.register('allJar', Jar) {
+    dependsOn 'compileJava'
+    dependsOn 'jar'
+    dependsOn subprojects.tasks['build']
+    baseName = 'allJar'
+    subprojects.each { subproject ->
+        from subproject.configurations.archives.allArtifacts.files.collect {
+            zipTree(it)
+        }
+    }
+}
+
+artifacts {
+    archives allJar
 }

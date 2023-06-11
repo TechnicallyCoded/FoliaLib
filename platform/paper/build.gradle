@@ -1,0 +1,7 @@
+group = 'com.tcoded.folialib.platform'
+
+dependencies {
+    implementation(project(":common"))
+    implementation(project(":platform:common"))
+    implementation(project(":platform:spigot"))
+}
