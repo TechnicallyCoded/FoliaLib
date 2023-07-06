@@ -4,13 +4,7 @@ import com.tcoded.folialib.wrapper.WrappedTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.plugin.Plugin;
 
-public class WrappedFoliaTask implements WrappedTask {
-
-    private final ScheduledTask task;
-
-    public WrappedFoliaTask(ScheduledTask task) {
-        this.task = task;
-    }
+public record WrappedFoliaTask(ScheduledTask task) implements WrappedTask {
 
     @Override
     public void cancel() {
