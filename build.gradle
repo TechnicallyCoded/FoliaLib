@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.tcoded'
-version '0.2.3'
+version '0.2.4'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT'
+    implementation 'dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT'
     implementation 'org.jetbrains:annotations:23.0.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
