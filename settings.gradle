@@ -7,5 +7,3 @@ include 'platform:paper'
 include 'platform:spigot'
 include 'platform:unsupported'
 include 'common'
-findProject(':platform:common')?.name = 'common'
-
