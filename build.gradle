@@ -24,6 +24,10 @@ allprojects {
         maven {
             url = "https://repo.papermc.io/repository/maven-public/"
         }
+
+        maven {
+            url = "https://nexuslite.gcnt.net/repos/paper/"
+        }
     }
 
     java {
