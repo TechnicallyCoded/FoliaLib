@@ -65,7 +65,7 @@ public class FoliaLib {
         String basePackage = "com.tcoded.folialib.impl.";
 
         try {
-            return (ServerImplementation) Class.forName(basePackage + "PaperImplementation")
+            return (ServerImplementation) Class.forName(basePackage + implName)
                     .getConstructor(this.getClass())
                     .newInstance(this);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
