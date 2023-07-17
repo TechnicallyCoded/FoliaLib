@@ -4,7 +4,13 @@ import com.tcoded.folialib.wrapper.WrappedTask;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-public record WrappedBukkitTask(BukkitTask task) implements WrappedTask {
+public class WrappedBukkitTask implements WrappedTask {
+
+    private final BukkitTask task;
+
+    public WrappedBukkitTask(BukkitTask task) {
+        this.task = task;
+    }
 
     @Override
     public void cancel() {
