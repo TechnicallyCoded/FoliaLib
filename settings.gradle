@@ -1,2 +1,9 @@
 rootProject.name = 'FoliaLib'
 
+include 'platform'
+include 'platform:common'
+include 'platform:folia'
+include 'platform:paper'
+include 'platform:spigot'
+include 'platform:unsupported'
+include 'common'
