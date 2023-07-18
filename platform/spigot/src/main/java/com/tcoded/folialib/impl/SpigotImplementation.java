@@ -3,20 +3,23 @@ package com.tcoded.folialib.impl;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.util.TimeConverter;
-import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -63,11 +66,11 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runLater(Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        this.scheduler.runTaskLater(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLater(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit)
-        );
+        ));
     }
 
     @Override
@@ -79,11 +82,11 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runLaterAsync(Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        this.scheduler.runTaskLaterAsynchronously(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLaterAsynchronously(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit)
-        );
+        ));
     }
 
     @Override
@@ -98,12 +101,12 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runTimer(Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        this.scheduler.runTaskTimer(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimer(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit),
                 TimeConverter.toTicks(period, unit)
-        );
+        ));
     }
 
     @Override
@@ -118,12 +121,12 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runTimerAsync(Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        this.scheduler.runTaskTimerAsynchronously(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimerAsynchronously(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit),
                 TimeConverter.toTicks(period, unit)
-        );
+        ));
     }
 
     @Override
@@ -147,7 +150,11 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtLocationLater(Location location, Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        this.scheduler.runTaskLater(plugin, scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)), TimeConverter.toTicks(delay, unit));
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLater(
+                plugin,
+                () -> task.accept(wrappedTask.get()),
+                TimeConverter.toTicks(delay, unit)
+        ));
     }
 
     @Override
@@ -156,18 +163,19 @@ public class SpigotImplementation implements ServerImplementation {
                 this.scheduler.runTaskTimer(
                         plugin, runnable,
                         TimeConverter.toTicks(delay, unit),
-                        TimeConverter.toTicks(period, unit))
+                        TimeConverter.toTicks(period, unit)
+                )
         );
     }
 
     @Override
     public void runAtLocationTimer(Location location, Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        this.scheduler.runTaskTimer(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimer(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit),
                 TimeConverter.toTicks(period, unit)
-        );
+        ));
     }
 
     @Override
@@ -208,7 +216,11 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtEntityLater(Entity entity, Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        this.scheduler.runTaskLater(plugin, scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)), TimeConverter.toTicks(delay, unit));
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLater(
+                plugin,
+                () -> task.accept(wrappedTask.get()),
+                TimeConverter.toTicks(delay, unit)
+        ));
     }
 
     @Override
@@ -223,12 +235,12 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        this.scheduler.runTaskTimer(
+        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimer(
                 plugin,
-                scheduledTask -> task.accept(new WrappedBukkitTask(scheduledTask)),
+                () -> task.accept(wrappedTask.get()),
                 TimeConverter.toTicks(delay, unit),
                 TimeConverter.toTicks(period, unit)
-        );
+        ));
     }
 
     @Override
@@ -294,5 +306,11 @@ public class SpigotImplementation implements ServerImplementation {
         });
 
         return future;
+    }
+
+    private void handleBukkitTask(Function<Supplier<WrappedTask>, BukkitTask> function) {
+        final AtomicReference<WrappedTask> taskAtomicReference = new AtomicReference<>();
+        final BukkitTask bukkitTask = function.apply(taskAtomicReference::get);
+        taskAtomicReference.set(new WrappedBukkitTask(bukkitTask));
     }
 }

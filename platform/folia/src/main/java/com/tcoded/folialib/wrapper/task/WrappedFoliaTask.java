@@ -1,6 +1,5 @@
 package com.tcoded.folialib.wrapper.task;
 
-import com.tcoded.folialib.wrapper.task.WrappedTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.plugin.Plugin;
 
