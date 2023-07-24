@@ -150,11 +150,7 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtLocationLater(Location location, Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLater(
-                plugin,
-                () -> task.accept(wrappedTask.get()),
-                TimeConverter.toTicks(delay, unit)
-        ));
+        runLater(task, delay, unit);
     }
 
     @Override
@@ -170,12 +166,7 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtLocationTimer(Location location, Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimer(
-                plugin,
-                () -> task.accept(wrappedTask.get()),
-                TimeConverter.toTicks(delay, unit),
-                TimeConverter.toTicks(period, unit)
-        ));
+        runTimer(task, delay, period, unit);
     }
 
     @Override
@@ -216,11 +207,7 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtEntityLater(Entity entity, Consumer<WrappedTask> task, long delay, TimeUnit unit) {
-        handleBukkitTask(wrappedTask -> this.scheduler.runTaskLater(
-                plugin,
-                () -> task.accept(wrappedTask.get()),
-                TimeConverter.toTicks(delay, unit)
-        ));
+        runLater(task, delay, unit);
     }
 
     @Override
@@ -235,12 +222,7 @@ public class SpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> task, long delay, long period, TimeUnit unit) {
-        handleBukkitTask(wrappedTask -> this.scheduler.runTaskTimer(
-                plugin,
-                () -> task.accept(wrappedTask.get()),
-                TimeConverter.toTicks(delay, unit),
-                TimeConverter.toTicks(period, unit)
-        ));
+        runTimer(task, delay, period, unit);
     }
 
     @Override
