@@ -28,7 +28,8 @@ Note: This project is still in its early stages and may make frequent breaking c
     </dependency>
 </dependencies>
 ```
-**!! You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins !!**
+> [!WARNING]\
+> You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins!
 
 ***
 
@@ -45,7 +46,8 @@ dependencies {
     implementation "com.tcoded:FoliaLib:[VERSION]"
 }
 ```
-**!! You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins !!**
+> [!WARNING]\
+> You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins!
 
 ## How to use
 Create a new instance of the FoliaLib class:
