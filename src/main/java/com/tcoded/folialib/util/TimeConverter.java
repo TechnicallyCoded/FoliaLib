@@ -8,4 +8,8 @@ public class TimeConverter {
         return unit.toMillis(time) / 50;
     }
 
+    public static long toMillis(long ticks) {
+        return Math.max(1, ticks) * 50;
+    }
+
 }
