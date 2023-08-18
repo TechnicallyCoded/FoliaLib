@@ -7,6 +7,7 @@ import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 public class FoliaImplementation implements ServerImplementation {
 
@@ -26,6 +29,14 @@ public class FoliaImplementation implements ServerImplementation {
         this.plugin = foliaLib.getPlugin();
         this.globalRegionScheduler = plugin.getServer().getGlobalRegionScheduler();
         this.asyncScheduler = plugin.getServer().getAsyncScheduler();
+    }
+
+    private static Consumer<ScheduledTask> wrapRunnable(BooleanSupplier runnable) {
+        return task -> {
+            if (runnable.getAsBoolean()) {
+                task.cancel();
+            }
+        };
     }
 
     @Override
@@ -75,28 +86,28 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period) {
+    public WrappedTask runTimer(BooleanSupplier runnable, long delay, long period) {
         return new WrappedFoliaTask(
-                this.globalRegionScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period)
+                this.globalRegionScheduler.runAtFixedRate(plugin, wrapRunnable(runnable), delay, period)
         );
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimer(BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runTimer(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
+    public WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period) {
         return this.runTimerAsync(
                 runnable, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
         );
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return new WrappedFoliaTask(
-                this.asyncScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period, unit)
+                this.asyncScheduler.runAtFixedRate(plugin, wrapRunnable(runnable), delay, period, unit)
         );
     }
 
@@ -125,14 +136,14 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
+    public WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period) {
         return new WrappedFoliaTask(
-                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
+                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, wrapRunnable(runnable), delay, period)
         );
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
@@ -182,14 +193,14 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
+    public WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period) {
         return new WrappedFoliaTask(
-                entity.getScheduler().runAtFixedRate(plugin, task -> runnable.run(), null, delay, period)
+                entity.getScheduler().runAtFixedRate(plugin, wrapRunnable(runnable), null, delay, period)
         );
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runAtEntityTimer(entity, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 

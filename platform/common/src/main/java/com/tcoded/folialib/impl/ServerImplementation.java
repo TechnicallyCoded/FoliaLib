@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 @SuppressWarnings("unused")
 public interface ServerImplementation {
@@ -83,12 +84,40 @@ public interface ServerImplementation {
      * Folia: Synced with the server daylight cycle tick
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runTimer(BooleanSupplier runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param runnable Task to run
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runTimer(Runnable runnable, long delay, long period);
+    default WrappedTask runTimer(Runnable runnable, long delay, long period) {
+        return runTimer(() -> {
+            runnable.run();
+            return true;
+        }, delay, period);
+    }
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    WrappedTask runTimer(BooleanSupplier runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -100,7 +129,23 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit);
+    default WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
+        return runTimer(() -> {
+            runnable.run();
+            return true;
+        }, delay, period, unit);
+    }
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period);
 
     /**
      * Folia: Async
@@ -111,19 +156,41 @@ public interface ServerImplementation {
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runTimerAsync(Runnable runnable, long delay, long period);
+    default WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
+        return runTimerAsync(() -> {
+            runnable.run();
+            return true;
+        }, delay, period);
+    }
 
     /**
      * Folia: Async
      * Paper: Async
      * Spigot: Async
-     * @param runnable Task to run
+     * @param runnable Task to run, return false to stop the timer
      * @param delay Delay before first execution
      * @param period Delay between executions
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit);
+    WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    default WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
+        return runTimerAsync(() -> {
+            runnable.run();
+            return true;
+        }, delay, period, unit);
+    }
 
 
     // ----- Location/Region based -----
@@ -166,12 +233,42 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
-     * @param runnable Task to run
+     * @param runnable Task to run, return false to stop the timer
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period);
+    WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @return WrappedTask instance
+     */
+    default WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
+        return runAtLocationTimer(location, () -> {
+            runnable.run();
+            return true;
+        }, delay, period);
+    }
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -184,7 +281,12 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit);
+    default WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
+        return runAtLocationTimer(location, () -> {
+            runnable.run();
+            return true;
+        }, delay, period, unit);
+    }
 
 
     // ----- Entity based -----
@@ -237,12 +339,42 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
-     * @param runnable Task to run
+     * @param runnable Task to run, return false to stop the timer
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period);
+    WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @return WrappedTask instance
+     */
+    default WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
+        return runAtEntityTimer(entity, () -> {
+            runnable.run();
+            return true;
+        }, delay, period);
+    }
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run, return false to stop the timer
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -255,7 +387,12 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit);
+    default WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
+        return runAtEntityTimer(entity, () -> {
+            runnable.run();
+            return true;
+        }, delay, period, unit);
+    }
 
     /**
      * Cancel a task

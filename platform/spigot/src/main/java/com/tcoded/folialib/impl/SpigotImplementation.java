@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -27,6 +29,17 @@ public class SpigotImplementation implements ServerImplementation {
     public SpigotImplementation(FoliaLib foliaLib) {
         this.plugin = foliaLib.getPlugin();
         this.scheduler = plugin.getServer().getScheduler();
+    }
+
+    private static BukkitRunnable wrapRunnable(BooleanSupplier runnable) {
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!runnable.getAsBoolean()) {
+                    this.cancel();
+                }
+            }
+        };
     }
 
     @Override
@@ -74,22 +87,22 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period) {
-        return new WrappedBukkitTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
+    public WrappedTask runTimer(BooleanSupplier runnable, long delay, long period) {
+        return new WrappedBukkitTask(wrapRunnable(runnable).runTaskTimer(plugin, delay, period));
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimer(BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runTimer(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
-        return new WrappedBukkitTask(this.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period));
+    public WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period) {
+        return new WrappedBukkitTask(wrapRunnable(runnable).runTaskTimerAsynchronously(plugin, delay, period));
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimerAsync(BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runTimerAsync(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
@@ -116,12 +129,12 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
-        return new WrappedBukkitTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
+    public WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period) {
+        return new WrappedBukkitTask(wrapRunnable(runnable).runTaskTimer(plugin, delay, period));
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtLocationTimer(Location location, BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
@@ -165,12 +178,12 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
-        return new WrappedBukkitTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
+    public WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period) {
+        return new WrappedBukkitTask(wrapRunnable(runnable).runTaskTimer(plugin, delay, period));
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtEntityTimer(Entity entity, BooleanSupplier runnable, long delay, long period, TimeUnit unit) {
         return this.runAtEntityTimer(entity, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
