@@ -5,6 +5,8 @@ import com.tcoded.folialib.impl.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class FoliaLib {
 
@@ -58,6 +60,18 @@ public class FoliaLib {
                     "Failed to create server implementation. Please report this to the FoliaLib GitHub issues page. " +
                             "Forks of server software may not all be supported. If you are using an unofficial fork, " +
                             "please report this to the fork's developers first.");
+        }
+
+        // Check for valid relocation
+        // Runtime replace to avoid relocations changing this string too
+        String originalLocation = "com,tcoded,folialib,".replace(",", ".");
+        if (this.getClass().getName().startsWith(originalLocation)) {
+            Logger logger = this.plugin.getLogger();
+            logger.severe("****************************************************************");
+            logger.severe("FoliaLib is not be relocated correctly! This will cause conflicts");
+            logger.severe("with other plugins using FoliaLib. Please contact the developers");
+            logger.severe(String.format("of '%s' and inform them of this issue immediately!", this.plugin.getDescription().getName()));
+            logger.severe("****************************************************************");
         }
     }
 
