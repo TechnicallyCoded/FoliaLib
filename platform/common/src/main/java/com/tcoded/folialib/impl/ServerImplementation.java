@@ -40,11 +40,31 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param runnable Task to run
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runLater(Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param runnable Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param runnable Task to run
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runLaterAsync(Runnable runnable, long delay);
 
     /**
      * Folia: Async
@@ -64,12 +84,34 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runTimer(Runnable runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param runnable Task to run
      * @param delay Delay before first execution
      * @param period Delay between executions
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runTimerAsync(Runnable runnable, long delay, long period);
 
     /**
      * Folia: Async
@@ -102,11 +144,34 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param runnable Task to run
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param runnable Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -150,11 +215,34 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param runnable Task to run
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)

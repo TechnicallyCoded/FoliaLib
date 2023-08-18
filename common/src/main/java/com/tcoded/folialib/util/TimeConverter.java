@@ -8,4 +8,7 @@ public class TimeConverter {
         return unit.toMillis(time) / 50;
     }
 
+    public static long toMillis(long delay) {
+        return delay * 50L;
+    }
 }

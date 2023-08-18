@@ -53,41 +53,50 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
+    public WrappedTask runLater(Runnable runnable, long delay) {
+        return new WrappedFoliaTask(this.globalRegionScheduler.runDelayed(plugin, task -> runnable.run(), delay));
+    }
+
+    @Override
     public WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit) {
-        return new WrappedFoliaTask(
-                this.globalRegionScheduler.runDelayed(
-                        plugin, task -> runnable.run(), TimeConverter.toTicks(delay, unit)
-                )
-        );
+        return this.runLater(runnable, TimeConverter.toTicks(delay, unit));
+    }
+
+    @Override
+    public WrappedTask runLaterAsync(Runnable runnable, long delay) {
+        return this.runLaterAsync(runnable, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
     }
 
     @Override
     public WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit) {
         return new WrappedFoliaTask(
-                this.asyncScheduler.runDelayed(
-                        plugin, task -> runnable.run(), delay, unit
-                )
+                this.asyncScheduler.runDelayed(plugin, task -> runnable.run(), delay, unit)
+        );
+    }
+
+    @Override
+    public WrappedTask runTimer(Runnable runnable, long delay, long period) {
+        return new WrappedFoliaTask(
+                this.globalRegionScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period)
         );
     }
 
     @Override
     public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
-        return new WrappedFoliaTask(
-                this.globalRegionScheduler.runAtFixedRate(
-                        plugin, task -> runnable.run(),
-                        TimeConverter.toTicks(delay, unit),
-                        TimeConverter.toTicks(period, unit)
-                )
+        return this.runTimer(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
+    }
+
+    @Override
+    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
+        return this.runTimerAsync(
+                runnable, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
         );
     }
 
     @Override
     public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
         return new WrappedFoliaTask(
-                this.asyncScheduler.runAtFixedRate(
-                        plugin, task -> runnable.run(),
-                        delay, period, unit
-                )
+                this.asyncScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period, unit)
         );
     }
 
@@ -104,24 +113,27 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit) {
+    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay) {
         return new WrappedFoliaTask(
-                this.plugin.getServer().getRegionScheduler().runDelayed(
-                        plugin, location, task -> runnable.run(),
-                        TimeConverter.toTicks(delay, unit)
-                )
+                this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> runnable.run(), delay)
+        );
+    }
+
+    @Override
+    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(location, runnable, TimeConverter.toTicks(delay, unit));
+    }
+
+    @Override
+    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
+        return new WrappedFoliaTask(
+                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
         );
     }
 
     @Override
     public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
-        return new WrappedFoliaTask(
-                this.plugin.getServer().getRegionScheduler().runAtFixedRate(
-                        plugin, location, task -> runnable.run(),
-                        TimeConverter.toTicks(delay, unit),
-                        TimeConverter.toTicks(period, unit)
-                )
-        );
+        return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
@@ -160,28 +172,25 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
     @Override
+    public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay) {
+        return new WrappedFoliaTask(entity.getScheduler().runDelayed(plugin, task -> runnable.run(), null, delay));
+    }
+
+    @Override
     public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit) {
+        return this.runAtEntityLater(entity, runnable, TimeConverter.toTicks(delay, unit));
+    }
+
+    @Override
+    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
         return new WrappedFoliaTask(
-                entity.getScheduler().runDelayed(
-                        plugin,
-                        task -> runnable.run(),
-                        null,
-                        TimeConverter.toTicks(delay, unit)
-                )
+                entity.getScheduler().runAtFixedRate(plugin, task -> runnable.run(), null, delay, period)
         );
     }
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
-        return new WrappedFoliaTask(
-                entity.getScheduler().runAtFixedRate(
-                        plugin,
-                        task -> runnable.run(),
-                        null,
-                        TimeConverter.toTicks(delay, unit),
-                        TimeConverter.toTicks(period, unit)
-                )
-        );
+        return this.runAtEntityTimer(entity, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
