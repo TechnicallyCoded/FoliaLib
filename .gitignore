@@ -46,3 +46,4 @@ bin/
 /gradle/
 gradlew
 gradlew.bat
+/target/
