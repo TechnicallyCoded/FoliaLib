@@ -2,44 +2,46 @@ package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.enums.EntityTaskResult;
+import com.tcoded.folialib.util.ImplementationTestsUtil;
 import com.tcoded.folialib.util.TimeConverter;
-import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
+import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-public class FoliaImplementation implements ServerImplementation {
+public class LegacySpigotImplementation implements ServerImplementation {
 
     private final JavaPlugin plugin;
-    private final GlobalRegionScheduler globalRegionScheduler;
-    private final AsyncScheduler asyncScheduler;
+    private final @NotNull BukkitScheduler scheduler;
 
-    public FoliaImplementation(FoliaLib foliaLib) {
+    public LegacySpigotImplementation(FoliaLib foliaLib) {
         this.plugin = foliaLib.getPlugin();
-        this.globalRegionScheduler = plugin.getServer().getGlobalRegionScheduler();
-        this.asyncScheduler = plugin.getServer().getAsyncScheduler();
+        this.scheduler = plugin.getServer().getScheduler();
     }
 
     @Override
     public CompletableFuture<Void> runNextTick(Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
+        WrappedTask[] taskReference = new WrappedTask[1];
 
-        this.globalRegionScheduler.run(plugin, task -> {
-            consumer.accept(this.wrapTask(task));
+        taskReference[0] = this.wrapTask(this.scheduler.runTask(plugin, () -> {
+            consumer.accept(taskReference[0]);
             future.complete(null);
-        });
+        }));
 
         return future;
     }
@@ -47,23 +49,28 @@ public class FoliaImplementation implements ServerImplementation {
     @Override
     public CompletableFuture<Void> runAsync(Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
+        WrappedTask[] taskReference = new WrappedTask[1];
 
-        this.asyncScheduler.runNow(plugin, task -> {
-            consumer.accept(this.wrapTask(task));
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskAsynchronously(plugin, () -> {
+            consumer.accept(taskReference[0]);
             future.complete(null);
-        });
+        }));
 
         return future;
     }
 
     @Override
     public WrappedTask runLater(Runnable runnable, long delay) {
-        return this.wrapTask(this.globalRegionScheduler.runDelayed(plugin, task -> runnable.run(), delay));
+        return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
     public void runLater(Consumer<WrappedTask> consumer, long delay) {
-        this.globalRegionScheduler.runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), delay);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay));
     }
 
     @Override
@@ -78,36 +85,40 @@ public class FoliaImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runLaterAsync(Runnable runnable, long delay) {
-        return this.runLaterAsync(runnable, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
+        return this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay));
     }
 
     @Override
     public void runLaterAsync(Consumer<WrappedTask> consumer, long delay) {
-        this.runLaterAsync(consumer, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay));
     }
 
     @Override
     public WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit) {
-        return this.wrapTask(
-                this.asyncScheduler.runDelayed(plugin, task -> runnable.run(), delay, unit)
-        );
+        return this.runLaterAsync(runnable, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
     public void runLaterAsync(Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.asyncScheduler.runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), delay, unit);
+        this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
     public WrappedTask runTimer(Runnable runnable, long delay, long period) {
-        return this.wrapTask(
-                this.globalRegionScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period)
-        );
+        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
     public void runTimer(Consumer<WrappedTask> consumer, long delay, long period) {
-        this.globalRegionScheduler.runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay, period));
     }
 
     @Override
@@ -122,52 +133,45 @@ public class FoliaImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
-        return this.runTimerAsync(
-                runnable, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
-        );
+        return this.wrapTask(this.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period));
     }
 
     @Override
     public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period) {
-        this.runTimerAsync(
-                consumer, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
-        );
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskTimerAsynchronously(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay, period));
     }
 
     @Override
     public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
-        return this.wrapTask(
-                this.asyncScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period, unit)
-        );
+        return this.runTimerAsync(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
     public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
-        this.asyncScheduler.runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period, unit);
+        this.runTimerAsync(consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
     public CompletableFuture<Void> runAtLocation(Location location, Consumer<WrappedTask> consumer) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-
-        this.plugin.getServer().getRegionScheduler().run(plugin, location, task -> {
-            consumer.accept(this.wrapTask(task));
-            future.complete(null);
-        });
-
-        return future;
+        return this.runNextTick(consumer);
     }
 
     @Override
     public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay) {
-        return this.wrapTask(
-                this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> runnable.run(), delay)
-        );
+        return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
     public void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay) {
-        this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay));
     }
 
     @Override
@@ -182,14 +186,16 @@ public class FoliaImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
-        return this.wrapTask(
-                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
-        );
+        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
     public void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period) {
-        this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay, period);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay, period));
     }
 
     @Override
@@ -205,15 +211,12 @@ public class FoliaImplementation implements ServerImplementation {
     @Override
     public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
+        WrappedTask[] taskReference = new WrappedTask[1];
 
-        ScheduledTask scheduledTask = entity.getScheduler().run(this.plugin, task -> {
-            consumer.accept(this.wrapTask(task));
+        taskReference[0] = this.wrapTask(this.scheduler.runTask(plugin, () -> {
+            consumer.accept(taskReference[0]);
             future.complete(EntityTaskResult.SUCCESS);
-        }, null);
-
-        if (scheduledTask == null) {
-            future.complete(EntityTaskResult.SCHEDULER_RETIRED);
-        }
+        }));
 
         return future;
     }
@@ -221,30 +224,33 @@ public class FoliaImplementation implements ServerImplementation {
     @Override
     public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
+        WrappedTask[] taskReference = new WrappedTask[1];
 
-        ScheduledTask scheduledTask = entity.getScheduler().run(this.plugin, task -> {
-            consumer.accept(this.wrapTask(task));
-            future.complete(EntityTaskResult.SUCCESS);
-        }, () -> {
-            fallback.run();
-            future.complete(EntityTaskResult.ENTITY_RETIRED);
-        });
-
-        if (scheduledTask == null) {
-            future.complete(EntityTaskResult.SCHEDULER_RETIRED);
-        }
+        taskReference[0] = this.wrapTask(this.scheduler.runTask(plugin, () -> {
+            if (entity.isValid()) {
+                consumer.accept(taskReference[0]);
+                future.complete(EntityTaskResult.SUCCESS);
+            } else {
+                fallback.run();
+                future.complete(EntityTaskResult.ENTITY_RETIRED);
+            }
+        }));
 
         return future;
     }
 
     @Override
     public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay) {
-        return this.wrapTask(entity.getScheduler().runDelayed(plugin, task -> runnable.run(), null, delay));
+        return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
     public void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay) {
-        entity.getScheduler().runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), null, delay);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay));
     }
 
     @Override
@@ -259,14 +265,16 @@ public class FoliaImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
-        return this.wrapTask(
-                entity.getScheduler().runAtFixedRate(plugin, task -> runnable.run(), null, delay, period)
-        );
+        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
     public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period) {
-        entity.getScheduler().runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), null, delay, period);
+        WrappedTask[] taskReference = new WrappedTask[1];
+
+        taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
+            consumer.accept(taskReference[0]);
+        }, delay, period));
     }
 
     @Override
@@ -286,39 +294,72 @@ public class FoliaImplementation implements ServerImplementation {
 
     @Override
     public void cancelAllTasks() {
-        this.globalRegionScheduler.cancelTasks(plugin);
-        this.asyncScheduler.cancelTasks(plugin);
+        this.scheduler.cancelTasks(plugin);
     }
 
     @Override
     public Player getPlayer(String name) {
-        // This is thread-safe in folia
-        return this.plugin.getServer().getPlayer(name);
+        return this.getPlayerFromMainThread(() -> this.plugin.getServer().getPlayer(name));
     }
 
     @Override
     public Player getPlayerExact(String name) {
-        // This is thread-safe in folia
-        return this.plugin.getServer().getPlayerExact(name);
+        return this.getPlayerFromMainThread(() -> this.plugin.getServer().getPlayerExact(name));
     }
 
     @Override
     public Player getPlayer(UUID uuid) {
-        // This is thread-safe in folia
-        return this.plugin.getServer().getPlayer(uuid);
+        return this.getPlayerFromMainThread(() -> this.plugin.getServer().getPlayer(uuid));
     }
 
     @Override
     public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
-        return player.teleportAsync(location);
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        this.runAtEntity(player, (task) -> {
+            if (player.isValid() && player.isOnline()) {
+                player.teleport(location);
+                future.complete(true);
+            } else {
+                future.complete(false);
+            }
+        });
+
+        return future;
     }
 
     @Override
     public WrappedTask wrapTask(Object nativeTask) {
-        if (!(nativeTask instanceof ScheduledTask)) {
-            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTask.getClass().getName() + " instead.");
+        if (!(nativeTask instanceof BukkitTask)) {
+            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
 
-        return new WrappedFoliaTask((ScheduledTask) nativeTask);
+        return ImplementationTestsUtil.isCancelledSupported() ?
+                new WrappedBukkitTask((BukkitTask) nativeTask) :
+                new WrappedLegacyBukkitTask((BukkitTask) nativeTask);
+    }
+
+    /**
+     * Internal util to get a player regardless of the calling thread
+     * @param playerSupplier The supplier to get the player
+     * @return Player or null if not found
+     */
+    private Player getPlayerFromMainThread(Supplier<Player> playerSupplier) {
+
+        // Already on the main thread
+        if (this.plugin.getServer().isPrimaryThread()) {
+            return playerSupplier.get();
+        }
+        // Not on the main thread, we need to wait until the next tick
+        else {
+            try {
+                return this.scheduler.callSyncMethod(plugin, playerSupplier::get).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Fallback to null
+        return null;
     }
 }

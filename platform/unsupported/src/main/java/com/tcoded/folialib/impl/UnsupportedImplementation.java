@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
-public class UnsupportedImplementation extends SpigotImplementation {
+public class UnsupportedImplementation extends LegacySpigotImplementation {
 
     public UnsupportedImplementation(FoliaLib foliaLib) {
         super(foliaLib);

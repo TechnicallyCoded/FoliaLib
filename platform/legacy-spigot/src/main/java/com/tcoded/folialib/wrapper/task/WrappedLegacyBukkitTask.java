@@ -1,13 +1,15 @@
 package com.tcoded.folialib.wrapper.task;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-public class WrappedBukkitTask implements WrappedTask {
+public class WrappedLegacyBukkitTask implements WrappedTask {
 
     private final BukkitTask task;
 
-    public WrappedBukkitTask(BukkitTask task) {
+    public WrappedLegacyBukkitTask(BukkitTask task) {
         this.task = task;
     }
 
@@ -18,7 +20,10 @@ public class WrappedBukkitTask implements WrappedTask {
 
     @Override
     public boolean isCancelled() {
-        return this.task.isCancelled();
+        // Legacy support
+        int taskId = this.task.getTaskId();
+        BukkitScheduler scheduler = Bukkit.getScheduler();
+        return !(scheduler.isCurrentlyRunning(taskId) || scheduler.isQueued(taskId));
     }
 
     @Override

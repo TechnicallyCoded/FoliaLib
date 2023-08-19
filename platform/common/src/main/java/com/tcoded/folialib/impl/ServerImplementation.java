@@ -9,8 +9,9 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface ServerImplementation {
 
     // ----- Run now -----
@@ -19,19 +20,19 @@ public interface ServerImplementation {
      * Folia: Synced with the server daylight cycle tick
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
-     * @param runnable Task to run
+     * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runNextTick(Runnable runnable);
+    CompletableFuture<Void> runNextTick(Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Async
      * Paper: Async
      * Spigot: Async
-     * @param runnable Task to run
+     * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAsync(Runnable runnable);
+    CompletableFuture<Void> runAsync(Consumer<WrappedTask> consumer);
 
     // ----- Run Later -----
 
@@ -49,12 +50,31 @@ public interface ServerImplementation {
      * Folia: Synced with the server daylight cycle tick
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param consumer Task to run
+     * @param delay Delay before execution in ticks
+     */
+    void runLater(Consumer<WrappedTask> consumer, long delay);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param runnable Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param consumer Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     */
+    void runLater(Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -70,12 +90,31 @@ public interface ServerImplementation {
      * Folia: Async
      * Paper: Async
      * Spigot: Async
+     * @param consumer Task to run
+     * @param delay Delay before execution in ticks
+     */
+    void runLaterAsync(Consumer<WrappedTask> consumer, long delay);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
      * @param runnable Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      * @return WrappedTask instance
      */
     WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param consumer Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     */
+    void runLaterAsync(Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -94,6 +133,16 @@ public interface ServerImplementation {
      * Folia: Synced with the server daylight cycle tick
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runTimer(Consumer<WrappedTask> consumer, long delay, long period);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param runnable Task to run
      * @param delay Delay before first execution
      * @param period Delay between executions
@@ -101,6 +150,17 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the server daylight cycle tick
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param consumer Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     */
+    void runTimer(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -117,6 +177,16 @@ public interface ServerImplementation {
      * Folia: Async
      * Paper: Async
      * Spigot: Async
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
      * @param runnable Task to run
      * @param delay Delay before first execution
      * @param period Delay between executions
@@ -124,6 +194,17 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Async
+     * Paper: Async
+     * Spigot: Async
+     * @param consumer Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     */
+    void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
 
     // ----- Location/Region based -----
@@ -133,10 +214,10 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
-     * @param runnable Task to run
+     * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtLocation(Location location, Runnable runnable);
+    CompletableFuture<Void> runAtLocation(Location location, Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -148,6 +229,16 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution in ticks
+     */
+    void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -166,12 +257,34 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     */
+    void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
      * @param runnable Task to run
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
     WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -186,6 +299,18 @@ public interface ServerImplementation {
      */
     WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit);
 
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param location Location to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     */
+    void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
+
 
     // ----- Entity based -----
 
@@ -194,20 +319,20 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
-     * @param runnable Task to run
+     * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Runnable runnable);
+    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
-     * @param runnable Task to run
+     * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Runnable runnable, Runnable fallback);
+    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Consumer<WrappedTask> consumer, Runnable fallback);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -219,6 +344,16 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution in ticks
+     */
+    void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -237,12 +372,34 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     */
+    void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
      * @param runnable Task to run
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
     WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -256,6 +413,18 @@ public interface ServerImplementation {
      * @return WrappedTask instance
      */
     WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     */
+    void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
     /**
      * Cancel a task
@@ -300,4 +469,11 @@ public interface ServerImplementation {
      * @return Future when the teleport is completed or failed
      */
     CompletableFuture<Boolean> teleportAsync(Player player, Location location);
+
+    /**
+     * Wraps a native task (Folia or Bukkit) into a WrappedTask
+     * @param nativeTask The native task object
+     * @return WrappedTask instance
+     */
+    WrappedTask wrapTask(Object nativeTask);
 }

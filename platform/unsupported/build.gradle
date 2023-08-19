@@ -5,5 +5,5 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":platform:common"))
-    implementation(project(":platform:spigot"))
+    implementation implementation(project(':platform:legacy-spigot',))
 }

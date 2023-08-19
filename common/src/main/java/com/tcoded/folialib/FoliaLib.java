@@ -1,11 +1,10 @@
 package com.tcoded.folialib;
 
 import com.tcoded.folialib.enums.ImplementationType;
-import com.tcoded.folialib.impl.*;
+import com.tcoded.folialib.impl.ServerImplementation;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class FoliaLib {
@@ -20,39 +19,18 @@ public class FoliaLib {
 
         // Find the implementation type based on the class names
         ImplementationType foundType = ImplementationType.UNKNOWN;
-        typeLoop:
+
         for (ImplementationType type : ImplementationType.values()) {
-            String[] classNames = type.getClassNames();
-
-            // Check if any of the class names are present
-            for (String className : classNames) {
-                try {
-                    // Try to load the class
-                    Class.forName(className);
-
-                    // Found the server type, remember that and break the loop
-                    foundType = type;
-                    break typeLoop;
-                } catch (ClassNotFoundException ignored) {}
-            }
+            // Implementation is not suited for this server
+            if (!type.selfCheck()) continue;
+            // Found implementation match
+            foundType = type;
+            break;
         }
 
         // Apply the implementation based on the type
         this.implementationType = foundType;
-        switch (foundType) {
-            case FOLIA:
-                this.implementation = this.createServerImpl("FoliaImplementation");
-                break;
-            case PAPER:
-                this.implementation = this.createServerImpl("PaperImplementation");
-                break;
-            case SPIGOT:
-                this.implementation = this.createServerImpl("SpigotImplementation");
-                break;
-            default:
-                this.implementation = this.createServerImpl("UnsupportedImplementation");
-                break;
-        }
+        this.implementation = this.createServerImpl(this.implementationType.getImplementationClassName());
 
         // Check for valid implementation
         if (this.implementation == null) {
@@ -76,7 +54,7 @@ public class FoliaLib {
     }
 
     private ServerImplementation createServerImpl(String implName) {
-        String basePackage = "com.tcoded.folialib.impl.";
+        String basePackage = this.getClass().getPackage().getName() + ".impl.";
 
         try {
             return (ServerImplementation) Class.forName(basePackage + implName)
