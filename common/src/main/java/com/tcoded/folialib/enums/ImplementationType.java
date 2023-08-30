@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * The enum is ordered by PRIORITY. The first implementation that passes all tests will be used.
  * <p>
  * A server is considered 'legacy' if it does not support task consumers. This feature was added in 1.13.2.
- * This means that event 1.13.1 servers are considered legacy servers as they do not support highly important
+ * This means that even 1.13.1 servers are considered legacy servers as they do not support highly important
  * features that developers may want to use. Refer to {@link ServerImplementation#runLater(Consumer, long)}
  * for more information on the behavior of task consumer-enabled methods on servers which do not support this feature.
  */
