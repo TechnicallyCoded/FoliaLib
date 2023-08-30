@@ -2,6 +2,7 @@ package com.tcoded.folialib;
 
 import com.tcoded.folialib.enums.ImplementationType;
 import com.tcoded.folialib.impl.ServerImplementation;
+import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +42,8 @@ public class FoliaLib {
         }
 
         // Check for valid relocation
-        // Runtime replace to avoid relocations changing this string too
+        // Runtime replace commas to avoid compiler relocations changing this string too
+        // Not beautiful, but functional
         String originalLocation = "com,tcoded,folialib,".replace(",", ".");
         if (this.getClass().getName().startsWith(originalLocation)) {
             Logger logger = this.plugin.getLogger();
@@ -53,20 +55,7 @@ public class FoliaLib {
         }
     }
 
-    private ServerImplementation createServerImpl(String implName) {
-        String basePackage = this.getClass().getPackage().getName() + ".impl.";
-
-        try {
-            return (ServerImplementation) Class.forName(basePackage + implName)
-                    .getConstructor(this.getClass())
-                    .newInstance(this);
-        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
-                 IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+    // Getters
 
     @SuppressWarnings("unused")
     public ImplementationType getImplType() {
@@ -85,12 +74,12 @@ public class FoliaLib {
 
     @SuppressWarnings("unused")
     public boolean isPaper() {
-        return implementationType == ImplementationType.PAPER;
+        return implementationType == ImplementationType.PAPER || implementationType == ImplementationType.LEGACY_PAPER;
     }
 
     @SuppressWarnings("unused")
     public boolean isSpigot() {
-        return implementationType == ImplementationType.SPIGOT;
+        return implementationType == ImplementationType.SPIGOT || implementationType == ImplementationType.LEGACY_SPIGOT;
     }
 
     @SuppressWarnings("unused")
@@ -100,5 +89,34 @@ public class FoliaLib {
 
     public JavaPlugin getPlugin() {
         return plugin;
+    }
+
+    // Public Options
+
+    @SuppressWarnings("unused")
+    public void disableInvalidTickValueWarning() {
+        InvalidTickDelayNotifier.disableNotifications = true;
+    }
+
+    @SuppressWarnings("unused")
+    public void enableInvalidTickValueDebug() {
+        InvalidTickDelayNotifier.debugMode = true;
+    }
+
+    // Internal Utils
+
+    private ServerImplementation createServerImpl(String implName) {
+        String basePackage = this.getClass().getPackage().getName() + ".impl.";
+
+        try {
+            return (ServerImplementation) Class.forName(basePackage + implName)
+                    .getConstructor(this.getClass())
+                    .newInstance(this);
+        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
+                 IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

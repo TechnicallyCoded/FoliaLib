@@ -2,6 +2,7 @@ package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.enums.EntityTaskResult;
+import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import com.tcoded.folialib.util.TimeConverter;
 import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
@@ -32,7 +33,7 @@ public class FoliaImplementation implements ServerImplementation {
         this.asyncScheduler = plugin.getServer().getAsyncScheduler();
     }
 
-    @Override
+	@Override
     public CompletableFuture<Void> runNextTick(Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -44,7 +45,7 @@ public class FoliaImplementation implements ServerImplementation {
         return future;
     }
 
-    @Override
+	@Override
     public CompletableFuture<Void> runAsync(Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -56,97 +57,121 @@ public class FoliaImplementation implements ServerImplementation {
         return future;
     }
 
-    @Override
+	@Override
     public WrappedTask runLater(Runnable runnable, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         return this.wrapTask(this.globalRegionScheduler.runDelayed(plugin, task -> runnable.run(), delay));
     }
 
-    @Override
+	@Override
     public void runLater(Consumer<WrappedTask> consumer, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         this.globalRegionScheduler.runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), delay);
     }
 
-    @Override
+	@Override
     public WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit) {
         return this.runLater(runnable, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public void runLater(Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public WrappedTask runLaterAsync(Runnable runnable, long delay) {
         return this.runLaterAsync(runnable, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
     }
 
-    @Override
+	@Override
     public void runLaterAsync(Consumer<WrappedTask> consumer, long delay) {
         this.runLaterAsync(consumer, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
     }
 
-    @Override
+	@Override
     public WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit) {
         return this.wrapTask(
                 this.asyncScheduler.runDelayed(plugin, task -> runnable.run(), delay, unit)
         );
     }
 
-    @Override
+	@Override
     public void runLaterAsync(Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.asyncScheduler.runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), delay, unit);
     }
 
-    @Override
+	@Override
     public WrappedTask runTimer(Runnable runnable, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         return this.wrapTask(
                 this.globalRegionScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period)
         );
     }
 
-    @Override
+	@Override
     public void runTimer(Consumer<WrappedTask> consumer, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         this.globalRegionScheduler.runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period);
     }
 
-    @Override
+	@Override
     public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runTimer(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public void runTimer(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runTimer(consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
         return this.runTimerAsync(
                 runnable, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
         );
     }
 
-    @Override
+	@Override
     public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period) {
         this.runTimerAsync(
                 consumer, TimeConverter.toMillis(delay), TimeConverter.toMillis(period), TimeUnit.MILLISECONDS
         );
     }
 
-    @Override
+	@Override
     public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.wrapTask(
                 this.asyncScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period, unit)
         );
     }
 
-    @Override
+	@Override
     public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.asyncScheduler.runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period, unit);
     }
 
-    @Override
+	@Override
     public CompletableFuture<Void> runAtLocation(Location location, Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -158,51 +183,75 @@ public class FoliaImplementation implements ServerImplementation {
         return future;
     }
 
-    @Override
+	@Override
     public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         return this.wrapTask(
                 this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> runnable.run(), delay)
         );
     }
 
-    @Override
+	@Override
     public void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay);
     }
 
-    @Override
+	@Override
     public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit) {
         return this.runAtLocationLater(location, runnable, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         return this.wrapTask(
                 this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
         );
     }
 
-    @Override
+	@Override
     public void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay, period);
     }
 
-    @Override
+	@Override
     public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtLocationTimer(location, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
@@ -218,7 +267,7 @@ public class FoliaImplementation implements ServerImplementation {
         return future;
     }
 
-    @Override
+	@Override
     public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
@@ -237,83 +286,107 @@ public class FoliaImplementation implements ServerImplementation {
         return future;
     }
 
-    @Override
+	@Override
     public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         return this.wrapTask(entity.getScheduler().runDelayed(plugin, task -> runnable.run(), null, delay));
     }
 
-    @Override
+	@Override
     public void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
         entity.getScheduler().runDelayed(plugin, task -> consumer.accept(this.wrapTask(task)), null, delay);
     }
 
-    @Override
+	@Override
     public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit) {
         return this.runAtEntityLater(entity, runnable, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
-    @Override
+	@Override
     public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         return this.wrapTask(
                 entity.getScheduler().runAtFixedRate(plugin, task -> runnable.run(), null, delay, period)
         );
     }
 
-    @Override
+	@Override
     public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
         entity.getScheduler().runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), null, delay, period);
     }
 
-    @Override
+	@Override
     public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runAtEntityTimer(entity, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtEntityTimer(entity, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
-    @Override
+	@Override
     public void cancelTask(WrappedTask task) {
         task.cancel();
     }
 
-    @Override
+	@Override
     public void cancelAllTasks() {
         this.globalRegionScheduler.cancelTasks(plugin);
         this.asyncScheduler.cancelTasks(plugin);
     }
 
-    @Override
+	@Override
     public Player getPlayer(String name) {
         // This is thread-safe in folia
         return this.plugin.getServer().getPlayer(name);
     }
 
-    @Override
+	@Override
     public Player getPlayerExact(String name) {
         // This is thread-safe in folia
         return this.plugin.getServer().getPlayerExact(name);
     }
 
-    @Override
+	@Override
     public Player getPlayer(UUID uuid) {
         // This is thread-safe in folia
         return this.plugin.getServer().getPlayer(uuid);
     }
 
-    @Override
+	@Override
     public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
         return player.teleportAsync(location);
     }
 
-    @Override
+	@Override
     public WrappedTask wrapTask(Object nativeTask) {
         if (!(nativeTask instanceof ScheduledTask)) {
             throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTask.getClass().getName() + " instead.");
