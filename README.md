@@ -23,7 +23,7 @@ Note: This project is still in its early stages and may make frequent breaking c
     <dependency>
         <groupId>com.tcoded</groupId>
         <artifactId>FoliaLib</artifactId>
-        <version>[VERSION]</version>
+        <version>[SEE TOP OF README]</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.tcoded:FoliaLib:[VERSION]"
+    implementation "com.tcoded:FoliaLib:[SEE TOP OF README]"
 }
 ```
 > [!WARNING]\
