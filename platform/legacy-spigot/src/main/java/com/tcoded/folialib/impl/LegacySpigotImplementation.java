@@ -5,11 +5,12 @@ import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.util.ImplementationTestsUtil;
 import com.tcoded.folialib.util.TimeConverter;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
-import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -313,18 +314,9 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-        this.runAtEntity(player, (task) -> {
-            if (player.isValid() && player.isOnline()) {
-                player.teleport(location);
-                future.complete(true);
-            } else {
-                future.complete(false);
-            }
-        });
-
+        this.runAtEntity(entity, (task) -> future.complete(entity.teleport(location, cause)));
         return future;
     }
 
@@ -341,6 +333,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
     /**
      * Internal util to get a player regardless of the calling thread
+     *
      * @param playerSupplier The supplier to get the player
      * @return Player or null if not found
      */
