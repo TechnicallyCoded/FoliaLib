@@ -12,6 +12,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
@@ -382,8 +383,8 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
-        return player.teleportAsync(location);
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, TeleportCause cause) {
+        return entity.teleportAsync(location,cause);
     }
 
 	@Override

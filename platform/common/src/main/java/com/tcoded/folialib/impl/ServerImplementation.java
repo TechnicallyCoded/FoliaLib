@@ -5,6 +5,7 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -465,10 +466,19 @@ public interface ServerImplementation {
     Player getPlayer(UUID uuid);
 
     /**
-     * Teleport a player to a location async
+     * Teleport an entity to a location async
+     * @param cause Who cause the teleporting
      * @return Future when the teleport is completed or failed
      */
-    CompletableFuture<Boolean> teleportAsync(Player player, Location location);
+    CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, TeleportCause cause);
+
+    /**
+     * Teleport an entity to a location async (Plugin causes)
+     * @return Future when the teleport is completed or failed
+     */
+    default CompletableFuture<Boolean> teleportAsync(Entity entity, Location location) {
+        return teleportAsync(entity, location, TeleportCause.PLUGIN);
+    }
 
     /**
      * Wraps a native task (Folia or Bukkit) into a WrappedTask
