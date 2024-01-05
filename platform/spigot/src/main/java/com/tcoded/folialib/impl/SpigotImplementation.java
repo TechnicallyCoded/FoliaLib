@@ -8,7 +8,7 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -277,7 +277,6 @@ public class SpigotImplementation implements ServerImplementation {
 
     /**
      * Internal util to get a player regardless of the calling thread
-     *
      * @param playerSupplier The supplier to get the player
      * @return Player or null if not found
      */
@@ -301,9 +300,22 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause) {
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, TeleportCause cause) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        this.runAtEntity(entity, (task) -> future.complete(entity.teleport(location, cause)));
+
+        this.runAtEntity(entity, (task) -> {
+            if (entity.isValid()) {
+                if (entity instanceof Player && !((Player) entity).isOnline()) {
+                    future.complete(false);
+                } else {
+                    entity.teleport(location, cause);
+                    future.complete(true);
+                }
+            } else {
+                future.complete(false);
+            }
+        });
+
         return future;
     }
 
@@ -312,7 +324,7 @@ public class SpigotImplementation implements ServerImplementation {
         if (!(nativeTask instanceof BukkitTask)) {
             throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
-
+        
         return new WrappedBukkitTask((BukkitTask) nativeTask);
     }
 }
