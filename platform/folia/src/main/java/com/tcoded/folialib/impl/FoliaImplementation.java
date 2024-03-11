@@ -461,7 +461,8 @@ public class FoliaImplementation implements ServerImplementation {
 	@Override
     public WrappedTask wrapTask(Object nativeTask) {
         if (!(nativeTask instanceof ScheduledTask)) {
-            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTask.getClass().getName() + " instead.");
+            String nativeTaskClassName = nativeTask == null ? null : nativeTask.getClass().getName();
+            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTaskClassName + " instead.");
         }
 
         return new WrappedFoliaTask((ScheduledTask) nativeTask);

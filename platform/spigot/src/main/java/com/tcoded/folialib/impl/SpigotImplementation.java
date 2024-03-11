@@ -334,7 +334,8 @@ public class SpigotImplementation implements ServerImplementation {
     @Override
     public WrappedTask wrapTask(Object nativeTask) {
         if (!(nativeTask instanceof BukkitTask)) {
-            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTask.getClass().getName() + " instead.");
+            String nativeTaskClassName = nativeTask == null ? null : nativeTask.getClass().getName();
+            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTaskClassName + " instead.");
         }
         
         return new WrappedBukkitTask((BukkitTask) nativeTask);
