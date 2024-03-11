@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -436,6 +437,18 @@ public interface ServerImplementation {
      * Cancel all tasks
      */
     void cancelAllTasks();
+
+    /**
+     * Get all tasks owned by this plugin
+     * @return WrappedTask instances
+     */
+    List<WrappedTask> getAllTasks();
+
+    /**
+     * Get all tasks across the server
+     * @return WrappedTask instances
+     */
+    List<WrappedTask> getAllServerTasks();
 
     /**
      * Get a player by name (approximately).

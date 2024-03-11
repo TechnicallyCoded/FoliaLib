@@ -13,12 +13,14 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class SpigotImplementation implements ServerImplementation {
@@ -257,6 +259,21 @@ public class SpigotImplementation implements ServerImplementation {
     @Override
     public void cancelAllTasks() {
         this.scheduler.cancelTasks(plugin);
+    }
+
+    @Override
+    public List<WrappedTask> getAllTasks() {
+        return this.scheduler.getPendingTasks().stream()
+                .filter(task -> task.getOwner().equals(plugin))
+                .map(this::wrapTask)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<WrappedTask> getAllServerTasks() {
+        return this.scheduler.getPendingTasks().stream()
+                .map(this::wrapTask)
+                .collect(Collectors.toList());
     }
 
     @Override

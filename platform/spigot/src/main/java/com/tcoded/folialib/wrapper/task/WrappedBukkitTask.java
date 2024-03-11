@@ -25,4 +25,10 @@ public class WrappedBukkitTask implements WrappedTask {
     public Plugin getOwningPlugin() {
         return this.task.getOwner();
     }
+
+    @Override
+    public boolean isAsync() {
+        return !this.task.isSync();
+    }
+
 }

@@ -9,15 +9,22 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @SuppressWarnings("unused")
@@ -363,7 +370,72 @@ public class FoliaImplementation implements ServerImplementation {
         this.asyncScheduler.cancelTasks(plugin);
     }
 
-	@Override
+    @Override
+    public List<WrappedTask> getAllTasks() {
+        try {
+            // Filter and wrap
+            return getAllScheduledTasks().stream()
+                    .filter(task -> task.getOwningPlugin().equals(plugin))
+                    .map(this::wrapTask)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<WrappedTask> getAllServerTasks() {
+        try {
+            // Filter and wrap
+            return getAllScheduledTasks().stream()
+                    .map(this::wrapTask)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @NotNull
+    private List<ScheduledTask> getAllScheduledTasks() throws NoSuchFieldException, IllegalAccessException {
+        // Global tasks
+        Class<? extends GlobalRegionScheduler> globalClass = this.globalRegionScheduler.getClass();
+
+        Field tasksByDeadlineField = globalClass.getDeclaredField("tasksByDeadline");
+        boolean wasAccessible = tasksByDeadlineField.isAccessible();
+        tasksByDeadlineField.setAccessible(true);
+
+        // noinspection unchecked
+        Long2ObjectOpenHashMap<List<ScheduledTask>> globalTasksMap = (Long2ObjectOpenHashMap<List<ScheduledTask>>) tasksByDeadlineField.get(this.globalRegionScheduler);
+        tasksByDeadlineField.setAccessible(wasAccessible);
+
+        // Async tasks
+        Class<? extends AsyncScheduler> asyncClass = this.asyncScheduler.getClass();
+
+        Field asyncTasksField = asyncClass.getDeclaredField("tasks");
+        wasAccessible = asyncTasksField.isAccessible();
+        asyncTasksField.setAccessible(true);
+
+        Set<ScheduledTask> asyncTasks = (Set<ScheduledTask>) asyncTasksField.get(this.asyncScheduler);
+        asyncTasksField.setAccessible(wasAccessible);
+
+        // Combine global tasks
+        List<ScheduledTask> globalTasks = new ArrayList<>();
+        for (List<ScheduledTask> list : globalTasksMap.values()) {
+            globalTasks.addAll(list);
+        }
+
+        // Combine all tasks
+        List<ScheduledTask> allTasks = new ArrayList<>(globalTasks.size() + asyncTasks.size());
+        allTasks.addAll(globalTasks);
+        allTasks.addAll(asyncTasks);
+        return allTasks;
+    }
+
+    @Override
     public Player getPlayer(String name) {
         // This is thread-safe in folia
         return this.plugin.getServer().getPlayer(name);
