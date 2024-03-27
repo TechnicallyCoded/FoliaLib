@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Void> runNextTick(Consumer<WrappedTask> consumer) {
+    public CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -49,7 +50,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Void> runAsync(Consumer<WrappedTask> consumer) {
+    public CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -62,12 +63,12 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runLater(Runnable runnable, long delay) {
+    public WrappedTask runLater(@NotNull Runnable runnable, long delay) {
         return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
-    public void runLater(Consumer<WrappedTask> consumer, long delay) {
+    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
@@ -76,22 +77,22 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit) {
+    public WrappedTask runLater(@NotNull Runnable runnable, long delay, TimeUnit unit) {
         return this.runLater(runnable, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public void runLater(Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public WrappedTask runLaterAsync(Runnable runnable, long delay) {
+    public WrappedTask runLaterAsync(@NotNull Runnable runnable, long delay) {
         return this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay));
     }
 
     @Override
-    public void runLaterAsync(Consumer<WrappedTask> consumer, long delay) {
+    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, () -> {
@@ -100,22 +101,22 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit) {
+    public WrappedTask runLaterAsync(@NotNull Runnable runnable, long delay, TimeUnit unit) {
         return this.runLaterAsync(runnable, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public void runLaterAsync(Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period) {
+    public WrappedTask runTimer(@NotNull Runnable runnable, long delay, long period) {
         return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
-    public void runTimer(Consumer<WrappedTask> consumer, long delay, long period) {
+    public void runTimer(@NotNull Consumer<WrappedTask> consumer, long delay, long period) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
@@ -124,22 +125,22 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimer(@NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runTimer(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public void runTimer(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+    public void runTimer(@NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runTimer(consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period) {
+    public WrappedTask runTimerAsync(@NotNull Runnable runnable, long delay, long period) {
         return this.wrapTask(this.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period));
     }
 
     @Override
-    public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period) {
+    public void runTimerAsync(@NotNull Consumer<WrappedTask> consumer, long delay, long period) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskTimerAsynchronously(plugin, () -> {
@@ -148,27 +149,27 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runTimerAsync(@NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runTimerAsync(runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+    public void runTimerAsync(@NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runTimerAsync(consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public CompletableFuture<Void> runAtLocation(Location location, Consumer<WrappedTask> consumer) {
+    public CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
         return this.runNextTick(consumer);
     }
 
     @Override
-    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay) {
+    public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay) {
         return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
-    public void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay) {
+    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
@@ -177,22 +178,22 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit) {
+    public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay, TimeUnit unit) {
         return this.runAtLocationLater(location, runnable, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period) {
+    public WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period) {
         return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
-    public void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period) {
+    public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
@@ -201,17 +202,17 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+    public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtLocationTimer(location, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Consumer<WrappedTask> consumer) {
+    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -224,7 +225,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Consumer<WrappedTask> consumer, Runnable fallback) {
+    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -242,12 +243,29 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay) {
+    public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, long delay) {
+        return this.runAtEntityLater(entity, runnable, null, delay);
+    }
+
+    @Override
+    public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, @Nullable Runnable fallback, long delay) {
+        if (!entity.isValid()) {
+            if (fallback != null) fallback.run();
+            return null;
+        }
         return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay) {
+    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        this.runAtEntityLater(entity, consumer, null, delay);
+    }
+
+    @Override
+    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
+        if (!entity.isValid()) {
+            if (fallback != null) fallback.run();
+        }
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
@@ -256,22 +274,40 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit) {
+    public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, long delay, TimeUnit unit) {
         return this.runAtEntityLater(entity, runnable, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period) {
+    public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, long delay, long period) {
+        return this.runAtEntityTimer(entity, runnable, null, delay, period);
+    }
+
+    @Override
+    public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay, long period) {
+        if (!entity.isValid()) {
+            if (fallback != null) fallback.run();
+            return null;
+        }
         return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
     }
 
     @Override
-    public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period) {
+    public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
+        this.runAtEntityTimer(entity, consumer, null, delay, period);
+    }
+
+    @Override
+    public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
+        if (!entity.isValid()) {
+            if (fallback != null) fallback.run();
+        }
+
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
@@ -280,12 +316,12 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit) {
+    public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runAtEntityTimer(entity, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override
-    public void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+    public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtEntityTimer(entity, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
@@ -359,6 +395,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
     /**
      * Internal util to get a player regardless of the calling thread
+     *
      * @param playerSupplier The supplier to get the player
      * @return Player or null if not found
      */

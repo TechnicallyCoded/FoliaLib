@@ -18,7 +18,7 @@ public class UnsupportedImplementation extends LegacySpigotImplementation {
                 String.format("\n" +
                               "---------------------------------------------------------------------\n" +
                               "FoliaLib does not support this server software! (%s)\n" +
-                              "FoliaLib will attempt to use the default spigot implementation.\n" +
+                              "FoliaLib will attempt to use the legacy spigot implementation.\n" +
                               "---------------------------------------------------------------------\n",
                         plugin.getServer().getVersion()
                 )

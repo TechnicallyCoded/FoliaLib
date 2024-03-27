@@ -5,6 +5,8 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +26,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runNextTick(Consumer<WrappedTask> consumer);
+    CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Async
@@ -33,7 +35,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAsync(Consumer<WrappedTask> consumer);
+    CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
 
     // ----- Run Later -----
 
@@ -45,7 +47,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runLater(Runnable runnable, long delay);
+    WrappedTask runLater(@NotNull Runnable runnable, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -54,7 +56,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runLater(Consumer<WrappedTask> consumer, long delay);
+    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -65,7 +67,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runLater(Runnable runnable, long delay, TimeUnit unit);
+    WrappedTask runLater(@NotNull Runnable runnable, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -75,7 +77,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runLater(Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -85,7 +87,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runLaterAsync(Runnable runnable, long delay);
+    WrappedTask runLaterAsync(@NotNull Runnable runnable, long delay);
 
     /**
      * Folia: Async
@@ -94,7 +96,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runLaterAsync(Consumer<WrappedTask> consumer, long delay);
+    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Async
@@ -105,7 +107,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runLaterAsync(Runnable runnable, long delay, TimeUnit unit);
+    WrappedTask runLaterAsync(@NotNull Runnable runnable, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -115,7 +117,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runLaterAsync(Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -128,7 +130,7 @@ public interface ServerImplementation {
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runTimer(Runnable runnable, long delay, long period);
+    WrappedTask runTimer(@NotNull Runnable runnable, long delay, long period);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -138,7 +140,7 @@ public interface ServerImplementation {
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      */
-    void runTimer(Consumer<WrappedTask> consumer, long delay, long period);
+    void runTimer(@NotNull Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -150,7 +152,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runTimer(Runnable runnable, long delay, long period, TimeUnit unit);
+    WrappedTask runTimer(@NotNull Runnable runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -161,7 +163,7 @@ public interface ServerImplementation {
      * @param period Delay between executions
      * @param unit Time unit
      */
-    void runTimer(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
+    void runTimer(@NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -172,7 +174,7 @@ public interface ServerImplementation {
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runTimerAsync(Runnable runnable, long delay, long period);
+    WrappedTask runTimerAsync(@NotNull Runnable runnable, long delay, long period);
 
     /**
      * Folia: Async
@@ -182,7 +184,7 @@ public interface ServerImplementation {
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      */
-    void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period);
+    void runTimerAsync(@NotNull Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Async
@@ -194,7 +196,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runTimerAsync(Runnable runnable, long delay, long period, TimeUnit unit);
+    WrappedTask runTimerAsync(@NotNull Runnable runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -205,7 +207,7 @@ public interface ServerImplementation {
      * @param period Delay between executions
      * @param unit Time unit
      */
-    void runTimerAsync(Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
+    void runTimerAsync(@NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
 
     // ----- Location/Region based -----
@@ -218,7 +220,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtLocation(Location location, Consumer<WrappedTask> consumer);
+    CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -229,7 +231,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay);
+    WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -239,7 +241,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay);
+    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -251,7 +253,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationLater(Location location, Runnable runnable, long delay, TimeUnit unit);
+    WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -262,7 +264,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runAtLocationLater(Location location, Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -274,7 +276,7 @@ public interface ServerImplementation {
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period);
+    WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -285,7 +287,7 @@ public interface ServerImplementation {
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      */
-    void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period);
+    void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -298,7 +300,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtLocationTimer(Location location, Runnable runnable, long delay, long period, TimeUnit unit);
+    WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -310,7 +312,7 @@ public interface ServerImplementation {
      * @param period Delay between executions
      * @param unit Time unit
      */
-    void runAtLocationTimer(Location location, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
+    void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
 
     // ----- Entity based -----
@@ -323,7 +325,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, Consumer<WrappedTask> consumer);
+    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -333,7 +335,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, Consumer<WrappedTask> consumer, Runnable fallback);
+    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -344,7 +346,19 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay);
+    WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run
+     * @param fallback Fallback task to run when the entity is removed
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, @Nullable Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -354,7 +368,18 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay);
+    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param fallback Fallback task to run when the entity is removed
+     * @param delay Delay before execution in ticks
+     */
+    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -366,7 +391,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityLater(Entity entity, Runnable runnable, long delay, TimeUnit unit);
+    WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -377,7 +402,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runAtEntityLater(Entity entity, Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -389,7 +414,19 @@ public interface ServerImplementation {
      * @param period Delay between executions in ticks
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period);
+    WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -400,7 +437,18 @@ public interface ServerImplementation {
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      */
-    void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period);
+    void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the entity (even if the entity moves)
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param entity Entity to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -413,7 +461,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return WrappedTask instance
      */
-    WrappedTask runAtEntityTimer(Entity entity, Runnable runnable, long delay, long period, TimeUnit unit);
+    WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, long delay, long period, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -425,7 +473,7 @@ public interface ServerImplementation {
      * @param period Delay between executions
      * @param unit Time unit
      */
-    void runAtEntityTimer(Entity entity, Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
+    void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
     /**
      * Cancel a task
