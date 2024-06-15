@@ -26,7 +26,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Async
@@ -35,7 +35,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
 
     // ----- Run Later -----
 
@@ -57,7 +57,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -79,7 +79,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -99,7 +99,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Async
@@ -121,7 +121,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -224,7 +224,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -246,7 +246,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -270,7 +270,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -331,7 +331,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -341,7 +341,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @return Future when the task is completed
      */
-    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -375,7 +375,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -387,7 +387,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution in ticks
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -411,7 +411,7 @@ public interface ServerImplementation {
      * @param unit Time unit
      * @return Future when the task is completed
      */
-    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)

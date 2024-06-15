@@ -41,7 +41,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         this.globalRegionScheduler.run(plugin, task -> {
@@ -53,7 +53,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         this.asyncScheduler.runNow(plugin, task -> {
@@ -74,7 +74,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         if (delay <= 0) {
@@ -95,7 +95,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         return this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
@@ -105,7 +105,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
         return this.runLaterAsync(consumer, TimeConverter.toMillis(delay), TimeUnit.MILLISECONDS);
     }
 
@@ -117,7 +117,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         this.asyncScheduler.runDelayed(plugin, task -> {
@@ -193,7 +193,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         this.plugin.getServer().getRegionScheduler().run(plugin, location, task -> {
@@ -216,7 +216,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         if (delay <= 0) {
@@ -237,7 +237,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         return this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
@@ -280,7 +280,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
         ScheduledTask scheduledTask = entity.getScheduler().run(this.plugin, task -> {
@@ -296,7 +296,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
         ScheduledTask scheduledTask = entity.getScheduler().run(this.plugin, task -> {
@@ -329,12 +329,12 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
         return this.runAtEntityLater(entity, consumer, null, delay);
     }
 
 	@Override
-    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         // Wrap the fallback so we can complete the future
@@ -364,7 +364,7 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
-    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         return this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
