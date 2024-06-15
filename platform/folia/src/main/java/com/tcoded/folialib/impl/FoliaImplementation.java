@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @SuppressWarnings("unused")
-public class FoliaImplementation implements ServerImplementation {
+public class FoliaImplementation implements SchedulerImpl {
 
     private final JavaPlugin plugin;
     private final GlobalRegionScheduler globalRegionScheduler;
