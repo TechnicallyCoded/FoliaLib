@@ -64,8 +64,15 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.scheduler.runTaskLater(plugin, task -> consumer.accept(this.wrapTask(task)), delay);
+    public CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.scheduler.runTaskLater(plugin, task -> {
+            consumer.accept(this.wrapTask(task));
+            future.complete(null);
+        }, delay);
+
+        return future;
     }
 
     @Override
@@ -74,8 +81,8 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLater(consumer, TimeConverter.toTicks(delay, unit));
+    public CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -84,8 +91,15 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.scheduler.runTaskLaterAsynchronously(plugin, task -> consumer.accept(this.wrapTask(task)), delay);
+    public CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.scheduler.runTaskLaterAsynchronously(plugin, task -> {
+            consumer.accept(this.wrapTask(task));
+            future.complete(null);
+        }, delay);
+
+        return future;
     }
 
     @Override
@@ -94,8 +108,8 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
+    public CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -149,8 +163,8 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.runLater(consumer, delay);
+    public CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        return this.runLater(consumer, delay);
     }
 
     @Override
@@ -159,8 +173,8 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
+    public CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -227,16 +241,28 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.runAtEntityLater(entity, consumer, null, delay);
+    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        return this.runAtEntityLater(entity, consumer, null, delay);
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback, long delay) {
+    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
         if (!entity.isValid()) {
-            if (fallback != null) fallback.run();
+            if (fallback != null) {
+                fallback.run();
+                future.complete(null);
+            }
         }
-        else this.runAtEntityLater(entity, consumer, delay);
+        else {
+            this.scheduler.runTaskLater(plugin, task -> {
+                consumer.accept(this.wrapTask(task));
+                future.complete(null);
+            }, delay);
+        }
+
+        return future;
     }
 
     @Override
@@ -245,8 +271,8 @@ public class SpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
+    public CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override

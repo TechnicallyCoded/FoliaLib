@@ -56,7 +56,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
+    CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -77,7 +77,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -96,7 +96,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
+    CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Async
@@ -117,7 +117,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -241,7 +241,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
+    CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -264,7 +264,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -368,7 +368,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
+    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -379,7 +379,7 @@ public interface ServerImplementation {
      * @param fallback Fallback task to run when the entity is removed
      * @param delay Delay before execution in ticks
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
+    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -402,7 +402,7 @@ public interface ServerImplementation {
      * @param delay Delay before execution
      * @param unit Time unit
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
