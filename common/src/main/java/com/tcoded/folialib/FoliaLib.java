@@ -1,7 +1,7 @@
 package com.tcoded.folialib;
 
 import com.tcoded.folialib.enums.ImplementationType;
-import com.tcoded.folialib.impl.ServerImplementation;
+import com.tcoded.folialib.impl.SchedulerImpl;
 import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +13,7 @@ public class FoliaLib {
     private final JavaPlugin plugin;
 
     private final ImplementationType implementationType;
-    private final ServerImplementation implementation;
+    private final SchedulerImpl implementation;
 
     public FoliaLib(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -62,8 +62,16 @@ public class FoliaLib {
         return implementationType;
     }
 
+    /**
+     * @deprecated Use {@link #getImplType()} instead. (forRemoval = true, since = "0.3.5")
+     */
+    @Deprecated
     @SuppressWarnings("unused")
-    public ServerImplementation getImpl() {
+    public SchedulerImpl getImpl() {
+        return getScheduler();
+    }
+
+    public SchedulerImpl getScheduler() {
         return implementation;
     }
 
@@ -105,11 +113,11 @@ public class FoliaLib {
 
     // Internal Utils
 
-    private ServerImplementation createServerImpl(String implName) {
+    private SchedulerImpl createServerImpl(String implName) {
         String basePackage = this.getClass().getPackage().getName() + ".impl.";
 
         try {
-            return (ServerImplementation) Class.forName(basePackage + implName)
+            return (SchedulerImpl) Class.forName(basePackage + implName)
                     .getConstructor(this.getClass())
                     .newInstance(this);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
