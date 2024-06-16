@@ -28,7 +28,7 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
 
@@ -37,7 +37,7 @@ public interface ServerImplementation {
      * Paper: Async
      * Spigot: Async
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
 
@@ -59,7 +59,7 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
@@ -81,7 +81,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
@@ -101,7 +101,7 @@ public interface ServerImplementation {
      * Spigot: Async
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
@@ -123,7 +123,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
@@ -226,7 +226,7 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
 
@@ -248,7 +248,7 @@ public interface ServerImplementation {
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
@@ -272,7 +272,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
@@ -333,7 +333,7 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
 
@@ -343,7 +343,7 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
 
@@ -377,7 +377,7 @@ public interface ServerImplementation {
      * @param entity Entity to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
 
@@ -389,7 +389,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param fallback Fallback task to run when the entity is removed
      * @param delay Delay before execution in ticks
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
@@ -413,7 +413,7 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
     @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
