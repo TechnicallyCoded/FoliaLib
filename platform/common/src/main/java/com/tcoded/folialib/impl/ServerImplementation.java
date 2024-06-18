@@ -28,18 +28,18 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Async
      * Paper: Async
      * Spigot: Async
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
 
     // ----- Run Later -----
 
@@ -59,8 +59,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -80,8 +81,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -99,8 +101,9 @@ public interface ServerImplementation {
      * Spigot: Async
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Async
@@ -120,8 +123,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -222,9 +226,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -244,8 +248,9 @@ public interface ServerImplementation {
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -267,8 +272,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -327,9 +333,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -337,9 +343,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -371,8 +377,9 @@ public interface ServerImplementation {
      * @param entity Entity to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -382,8 +389,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param fallback Fallback task to run when the entity is removed
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -405,8 +413,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)

@@ -37,7 +37,7 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -50,7 +50,7 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -68,12 +68,16 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -82,8 +86,8 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLater(consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -92,12 +96,16 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -106,8 +114,8 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -159,7 +167,7 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
         return this.runNextTick(consumer);
     }
 
@@ -169,12 +177,16 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -183,8 +195,8 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -212,7 +224,7 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -225,7 +237,7 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -257,20 +269,28 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.runAtEntityLater(entity, consumer, null, delay);
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        return this.runAtEntityLater(entity, consumer, null, delay);
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
         if (!entity.isValid()) {
-            if (fallback != null) fallback.run();
+            if (fallback != null) {
+                fallback.run();
+                future.complete(null);
+            }
         }
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -279,8 +299,8 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
