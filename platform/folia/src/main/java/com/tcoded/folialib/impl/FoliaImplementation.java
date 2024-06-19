@@ -10,7 +10,10 @@ import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,7 +43,42 @@ public class FoliaImplementation implements SchedulerImpl {
         this.asyncScheduler = plugin.getServer().getAsyncScheduler();
     }
 
-	@Override
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Location location) {
+        return Bukkit.isOwnedByCurrentRegion(location);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks) {
+        return Bukkit.isOwnedByCurrentRegion(location, squareRadiusChunks);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Block block) {
+        return Bukkit.isOwnedByCurrentRegion(block);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
+        return Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
+        return Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ, squareRadiusChunks);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
+        return Bukkit.isOwnedByCurrentRegion(entity);
+    }
+
+    @Override
+    public boolean isGlobalTickThread() {
+        return Bukkit.isGlobalTickThread();
+    }
+
+    @Override
     public CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
