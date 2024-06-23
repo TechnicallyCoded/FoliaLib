@@ -11,6 +11,7 @@ import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -191,6 +192,18 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
+    public CompletableFuture<Void> runAtLocation(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        this.plugin.getServer().getRegionScheduler().run(plugin, world, chunkX, chunkZ, task -> {
+            consumer.accept(this.wrapTask(task));
+            future.complete(null);
+        });
+
+        return future;
+    }
+
+	@Override
     public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay) {
         if (delay <= 0) {
             InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
@@ -198,6 +211,17 @@ public class FoliaImplementation implements ServerImplementation {
         }
         return this.wrapTask(
                 this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> runnable.run(), delay)
+        );
+    }
+
+	@Override
+    public WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        return this.wrapTask(
+                this.plugin.getServer().getRegionScheduler().runDelayed(plugin, world, chunkX, chunkZ, task -> runnable.run(), delay)
         );
     }
 
@@ -211,13 +235,32 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
+    public void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        this.plugin.getServer().getRegionScheduler().runDelayed(plugin, world, chunkX, chunkZ, task -> consumer.accept(this.wrapTask(task)), delay);
+    }
+
+	@Override
     public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay, TimeUnit unit) {
         return this.runAtLocationLater(location, runnable, TimeConverter.toTicks(delay, unit));
     }
 
 	@Override
+    public WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(world, chunkX, chunkZ, runnable, TimeConverter.toTicks(delay, unit));
+    }
+
+	@Override
     public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
+    }
+
+	@Override
+    public void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        this.runAtLocationLater(world, chunkX, chunkZ, consumer, TimeConverter.toTicks(delay, unit));
     }
 
 	@Override
@@ -236,6 +279,21 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
+    public WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
+        return this.wrapTask(
+                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, world, chunkX, chunkZ, task -> runnable.run(), delay, period)
+        );
+    }
+
+	@Override
     public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
         if (delay <= 0) {
             InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
@@ -249,13 +307,36 @@ public class FoliaImplementation implements ServerImplementation {
     }
 
 	@Override
+    public void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
+        if (delay <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
+            delay = 1;
+        }
+        if (period <= 0) {
+            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
+            period = 1;
+        }
+        this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, world, chunkX, chunkZ, task -> consumer.accept(this.wrapTask(task)), delay, period);
+    }
+
+	@Override
     public WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
         return this.runAtLocationTimer(location, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
 	@Override
+    public WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
+        return this.runAtLocationTimer(world, chunkX, chunkZ, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
+    }
+
+	@Override
     public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtLocationTimer(location, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
+    }
+
+	@Override
+    public void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+        this.runAtLocationTimer(world, chunkX, chunkZ, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
 	@Override

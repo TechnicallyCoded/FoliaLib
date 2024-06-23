@@ -8,6 +8,7 @@ import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -164,17 +165,28 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
+    public CompletableFuture<Void> runAtLocation(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer) {
+        return this.runNextTick(consumer);
+    }
+
+    @Override
     public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay) {
-        return this.wrapTask(this.scheduler.runTaskLater(plugin, runnable, delay));
+        return this.runLater(runnable, delay);
+    }
+
+    @Override
+    public WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay) {
+        return this.runLater(runnable, delay);
     }
 
     @Override
     public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
-        WrappedTask[] taskReference = new WrappedTask[1];
+        this.runLater(consumer, delay);
+    }
 
-        taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
-            consumer.accept(taskReference[0]);
-        }, delay));
+    @Override
+    public void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        this.runLater(consumer, delay);
     }
 
     @Override
@@ -183,22 +195,38 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
+    public WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(world, chunkX, chunkZ, runnable, TimeConverter.toTicks(delay, unit));
+    }
+
+    @Override
     public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
         this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
+    public void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        this.runAtLocationLater(world, chunkX, chunkZ, consumer, TimeConverter.toTicks(delay, unit));
+    }
+
+    @Override
     public WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period) {
-        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
+        return this.runTimer(runnable, delay, period);
+    }
+
+    @Override
+    public WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period) {
+        return this.runTimer(runnable, delay, period);
     }
 
     @Override
     public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
-        WrappedTask[] taskReference = new WrappedTask[1];
+        this.runTimer(consumer, delay, period);
+    }
 
-        taskReference[0] = this.wrapTask(this.scheduler.runTaskTimer(plugin, () -> {
-            consumer.accept(taskReference[0]);
-        }, delay, period));
+    @Override
+    public void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
+        this.runTimer(consumer, delay, period);
     }
 
     @Override
@@ -207,8 +235,18 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
+    public WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period, TimeUnit unit) {
+        return this.runAtLocationTimer(world, chunkX, chunkZ, runnable, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
+    }
+
+    @Override
     public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
         this.runAtLocationTimer(location, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
+    }
+
+    @Override
+    public void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit) {
+        this.runAtLocationTimer(world, chunkX, chunkZ, consumer, TimeConverter.toTicks(delay, unit), TimeConverter.toTicks(period, unit));
     }
 
     @Override

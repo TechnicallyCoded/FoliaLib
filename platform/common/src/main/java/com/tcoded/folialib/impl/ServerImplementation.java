@@ -3,6 +3,7 @@ package com.tcoded.folialib.impl;
 import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -226,6 +227,18 @@ public interface ServerImplementation {
      * Folia: Synced with the tick of the region of the chunk of the location
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param consumer Task to run
+     * @return Future when the task is completed
+     */
+    CompletableFuture<Void> runAtLocation(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param runnable Task to run
      * @param delay Delay before execution in ticks
@@ -237,11 +250,36 @@ public interface ServerImplementation {
      * Folia: Synced with the tick of the region of the chunk of the location
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before execution in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
      */
     void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution in ticks
+     */
+    void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -259,12 +297,39 @@ public interface ServerImplementation {
      * Folia: Synced with the tick of the region of the chunk of the location
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
      */
     void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before execution
+     * @param unit Time unit
+     */
+    void runAtLocationLater(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -282,12 +347,39 @@ public interface ServerImplementation {
      * Folia: Synced with the tick of the region of the chunk of the location
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before first execution in ticks
      * @param period Delay between executions in ticks
      */
     void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution in ticks
+     * @param period Delay between executions in ticks
+     */
+    void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -306,6 +398,21 @@ public interface ServerImplementation {
      * Folia: Synced with the tick of the region of the chunk of the location
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param runnable Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     * @return WrappedTask instance
+     */
+    WrappedTask runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Runnable runnable, long delay, long period, TimeUnit unit);
+
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before first execution
@@ -314,6 +421,19 @@ public interface ServerImplementation {
      */
     void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
+    /**
+     * Folia: Synced with the tick of the region of the chunk of the location
+     * Paper: Synced with the server main thread
+     * Spigot: Synced with the server main thread
+     * @param world The world to run the task at
+     * @param chunkX The x coordinate of the chunk to run the task at
+     * @param chunkZ The z coordinate of the chunk to run the task at
+     * @param consumer Task to run
+     * @param delay Delay before first execution
+     * @param period Delay between executions
+     * @param unit Time unit
+     */
+    void runAtLocationTimer(World world, int chunkX, int chunkZ, @NotNull Consumer<WrappedTask> consumer, long delay, long period, TimeUnit unit);
 
     // ----- Entity based -----
 
