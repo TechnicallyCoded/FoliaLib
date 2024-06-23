@@ -26,7 +26,7 @@ public enum ImplementationType {
     ),
     PAPER (
             "PaperImplementation",
-            new Supplier[] {ImplementationTestsUtil::isTaskConsumersSupported},
+            new Supplier[] {ImplementationTestsUtil::isTaskConsumersSupported, ImplementationTestsUtil::isAsyncTeleportSupported},
             "com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration"
     ),
     LEGACY_PAPER (

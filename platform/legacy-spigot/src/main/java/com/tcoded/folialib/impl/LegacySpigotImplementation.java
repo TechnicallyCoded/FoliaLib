@@ -9,7 +9,9 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -366,16 +368,24 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        this.runAtEntity(player, (task) -> {
-            if (player.isValid() && player.isOnline()) {
-                player.teleport(location);
-                future.complete(true);
-            } else {
+        this.runAtEntity(entity, tp -> {
+            if (!entity.isValid()) { // Entity died or despawned
                 future.complete(false);
+                return;
             }
+
+            if (entity.getType() == EntityType.PLAYER) {
+                Player player = (Player) entity;
+                if (!player.isOnline()) {
+                    future.complete(false);
+                    return;
+                }
+            }
+
+            future.complete(entity.teleport(location, cause));
         });
 
         return future;
