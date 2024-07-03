@@ -45,37 +45,37 @@ public class FoliaImplementation implements SchedulerImpl {
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull Location location) {
-        return Bukkit.isOwnedByCurrentRegion(location);
+        return this.plugin.getServer().isOwnedByCurrentRegion(location);
     }
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks) {
-        return Bukkit.isOwnedByCurrentRegion(location, squareRadiusChunks);
+        return this.plugin.getServer().isOwnedByCurrentRegion(location, squareRadiusChunks);
     }
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull Block block) {
-        return Bukkit.isOwnedByCurrentRegion(block);
+        return this.plugin.getServer().isOwnedByCurrentRegion(block);
     }
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
-        return Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ);
+        return this.plugin.getServer().isOwnedByCurrentRegion(world, chunkX, chunkZ);
     }
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
-        return Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ, squareRadiusChunks);
+        return this.plugin.getServer().isOwnedByCurrentRegion(world, chunkX, chunkZ, squareRadiusChunks);
     }
 
     @Override
     public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
-        return Bukkit.isOwnedByCurrentRegion(entity);
+        return this.plugin.getServer().isOwnedByCurrentRegion(entity);
     }
 
     @Override
     public boolean isGlobalTickThread() {
-        return Bukkit.isGlobalTickThread();
+        return this.plugin.getServer().isGlobalTickThread();
     }
 
     @Override

@@ -8,6 +8,8 @@ import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +36,41 @@ public class LegacySpigotImplementation implements SchedulerImpl {
     public LegacySpigotImplementation(FoliaLib foliaLib) {
         this.plugin = foliaLib.getPlugin();
         this.scheduler = plugin.getServer().getScheduler();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Location location) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Block block) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isGlobalTickThread() {
+        return this.plugin.getServer().isPrimaryThread();
     }
 
     @Override

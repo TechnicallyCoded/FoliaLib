@@ -36,9 +36,7 @@ public interface ServerImplementation {
      * @param location Specified location, must have a non-null world
      * @return true if the current thread is ticking the region that owns the chunk at the specified location
      */
-    default boolean isOwnedByCurrentRegion(@NotNull Location location) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull Location location);
 
     /**
      * Folia: Returns whether the current thread is ticking a region and that
@@ -55,9 +53,7 @@ public interface ServerImplementation {
      * @param squareRadiusChunks Specified square radius. Must be >= 0. Note that this parameter is not a squared radius, but rather a Chebyshev Distance
      * @return true if the current thread is ticking the region that owns the chunks centered at the specified location within the specified square radius
      */
-    default boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks);
 
     /**
      * Folia: Returns whether the current thread is ticking a region and that
@@ -68,9 +64,7 @@ public interface ServerImplementation {
      * @param block Specified block position
      * @return true if the current thread is ticking the region that owns the chunk at the specified block position
      */
-    default boolean isOwnedByCurrentRegion(@NotNull Block block) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull Block block);
 
     /**
      * Folia: Returns whether the current thread is ticking a region and that
@@ -84,9 +78,7 @@ public interface ServerImplementation {
      * @param chunkZ Specified z-coordinate of the chunk position
      * @return true if the current thread is ticking the region that owns the chunk at the specified world and chunk position
      */
-    default boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ);
 
     /**
      * Folia: Returns whether the current thread is ticking a region and that
@@ -104,9 +96,7 @@ public interface ServerImplementation {
      * @param squareRadiusChunks Specified square radius. Must be >= 0. Note that this parameter is not a squared radius, but rather a Chebyshev Distance.
      * @return true if the current thread is ticking the region that owns the chunks centered at the specified world and chunk position within the specified square radius
      */
-    default boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks);
 
     /**
      * Folia: Returns whether the current thread is ticking a region and that
@@ -120,9 +110,7 @@ public interface ServerImplementation {
      * @param entity Specified entity
      * @return true if the current thread is ticking the region that owns the specified entity
      */
-    default boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isOwnedByCurrentRegion(@NotNull Entity entity);
 
     /**
      * Folia: Returns whether the current thread is ticking the global region.
@@ -131,9 +119,7 @@ public interface ServerImplementation {
      *
      * @return true if the current thread is ticking the global region
      */
-    default boolean isGlobalTickThread() {
-        return Bukkit.isPrimaryThread();
-    }
+    boolean isGlobalTickThread();
 
     // ----- Run now -----
 
