@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class LegacySpigotImplementation implements SchedulerImpl {
+public class LegacySpigotImplementation implements PlatformScheduler {
 
     private final JavaPlugin plugin;
     private final @NotNull BukkitScheduler scheduler;

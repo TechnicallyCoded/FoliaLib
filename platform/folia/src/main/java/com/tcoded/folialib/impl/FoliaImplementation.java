@@ -10,7 +10,6 @@ import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 
 
 @SuppressWarnings("unused")
-public class FoliaImplementation implements SchedulerImpl {
+public class FoliaImplementation implements PlatformScheduler {
 
     private final JavaPlugin plugin;
     private final GlobalRegionScheduler globalRegionScheduler;

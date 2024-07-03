@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * @deprecated Use {@link SchedulerImpl} instead. (forRemoval = true, since = "0.3.5")
+ * @deprecated Use {@link PlatformScheduler} instead. (forRemoval = true, since = "0.3.5"). Deprecated in favor of better naming.
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @Deprecated
