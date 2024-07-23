@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -547,9 +548,9 @@ public class FoliaImplementation implements PlatformScheduler {
         return this.plugin.getServer().getPlayer(uuid);
     }
 
-	@Override
-    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
-        return player.teleportAsync(location);
+    @Override
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause) {
+        return entity.teleportAsync(location, cause);
     }
 
 	@Override
