@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -639,10 +640,21 @@ public interface ServerImplementation {
     Player getPlayer(UUID uuid);
 
     /**
-     * Teleport a player to a location async
+     * Teleport an entity to a location async
+     * @param entity Entity to teleport
+     * @param location Location to teleport to
      * @return Future when the teleport is completed or failed
      */
-    CompletableFuture<Boolean> teleportAsync(Player player, Location location);
+    CompletableFuture<Boolean> teleportAsync(Entity entity, Location location);
+
+    /**
+     * Teleport an entity to a location async with a cause
+     * @param entity Entity to teleport
+     * @param location Location to teleport to
+     * @param cause Cause of the teleport
+     * @return Future when the teleport is completed or failed
+     */
+    CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause);
 
     /**
      * Wraps a native task (Folia or Bukkit) into a WrappedTask
