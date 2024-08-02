@@ -238,8 +238,8 @@ public class SpigotImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
-        this.scheduler.runTask(plugin, (task) -> {
-            consumer.accept(this.wrapTask(task));
+        this.runNextTick(task -> {
+            consumer.accept(task);
             future.complete(EntityTaskResult.SUCCESS);
         });
 
@@ -250,9 +250,9 @@ public class SpigotImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
-        this.scheduler.runTask(plugin, (task) -> {
+        this.runNextTick(task -> {
             if (entity.isValid()) {
-                consumer.accept(this.wrapTask(task));
+                consumer.accept(task);
                 future.complete(EntityTaskResult.SUCCESS);
             } else {
                 fallback.run();
@@ -274,7 +274,8 @@ public class SpigotImplementation implements PlatformScheduler {
             if (fallback != null) fallback.run();
             return null;
         }
-        return this.runAtEntityLater(entity, runnable, delay);
+//        return this.runAtEntityLater(entity, runnable, delay); // todo: remove old
+        return this.runLater(runnable, delay);
     }
 
     @Override
@@ -293,7 +294,7 @@ public class SpigotImplementation implements PlatformScheduler {
             }
         }
         else {
-            this.scheduler.runTaskLater(plugin, task -> {
+            this.runLater(task -> {
                 consumer.accept(this.wrapTask(task));
                 future.complete(null);
             }, delay);
@@ -323,7 +324,8 @@ public class SpigotImplementation implements PlatformScheduler {
             if (fallback != null) fallback.run();
             return null;
         }
-        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period));
+        return this.runTimer(runnable, delay, period);
+//        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period)); // todo: remove old
     }
 
     @Override
@@ -333,11 +335,20 @@ public class SpigotImplementation implements PlatformScheduler {
 
     @Override
     public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
+        // Sanity check before running once
         if (!entity.isValid()) {
             if (fallback != null) fallback.run();
             return;
         }
-        this.scheduler.runTaskTimer(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period);
+
+        this.runTimer(task -> {
+            // Perform sanity check before running each time
+            if (!entity.isValid()) {
+                if (fallback != null) fallback.run();
+                return;
+            }
+            consumer.accept(task);
+        }, delay, period);
     }
 
     @Override
