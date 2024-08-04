@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -280,7 +281,7 @@ public class LegacySpigotImplementation implements PlatformScheduler {
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTask(plugin, () -> {
-            if (entity.isValid()) {
+            if (entity.isValid() || (entity instanceof Projectile && !entity.isDead())) {
                 consumer.accept(taskReference[0]);
                 future.complete(EntityTaskResult.SUCCESS);
             } else {
@@ -299,7 +300,7 @@ public class LegacySpigotImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, @Nullable Runnable fallback, long delay) {
-        if (!entity.isValid()) {
+        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -315,7 +316,7 @@ public class LegacySpigotImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        if (!entity.isValid()) {
+        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
             if (fallback != null) {
                 fallback.run();
                 future.complete(null);
@@ -348,7 +349,7 @@ public class LegacySpigotImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay, long period) {
-        if (!entity.isValid()) {
+        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -362,7 +363,7 @@ public class LegacySpigotImplementation implements PlatformScheduler {
 
     @Override
     public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
-        if (!entity.isValid()) {
+        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
             if (fallback != null) fallback.run();
         }
 
@@ -433,7 +434,8 @@ public class LegacySpigotImplementation implements PlatformScheduler {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         this.runAtEntity(entity, (task) -> {
-            if (entity.isValid() && ((entity instanceof Player) && ((Player) entity).isOnline())) {
+            if ((entity.isValid() && ((entity instanceof Player) && ((Player) entity).isOnline()))
+                    || (entity instanceof Projectile && !entity.isDead())) {
                 entity.teleport(location);
                 future.complete(true);
             } else {
