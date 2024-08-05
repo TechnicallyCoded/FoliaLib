@@ -253,7 +253,7 @@ public class SpigotImplementation implements PlatformScheduler {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
         this.runNextTick(task -> {
-            if (entity.isValid() || (entity instanceof Projectile && !entity.isDead())) {
+            if (isValid(entity)) {
                 consumer.accept(task);
                 future.complete(EntityTaskResult.SUCCESS);
             } else {
@@ -272,7 +272,7 @@ public class SpigotImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay) {
-        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -289,7 +289,7 @@ public class SpigotImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
+        if (!isValid(entity)) {
             if (fallback != null) {
                 fallback.run();
                 future.complete(null);
@@ -322,7 +322,7 @@ public class SpigotImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, @Nullable Runnable fallback, long delay, long period) {
-        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -338,14 +338,14 @@ public class SpigotImplementation implements PlatformScheduler {
     @Override
     public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
         // Sanity check before running once
-        if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
             return;
         }
 
         this.runTimer(task -> {
             // Perform sanity check before running each time
-            if (!entity.isValid() || (entity instanceof Projectile && entity.isDead())) {
+            if (!isValid(entity)) {
                 if (fallback != null) fallback.run();
                 return;
             }
@@ -437,8 +437,7 @@ public class SpigotImplementation implements PlatformScheduler {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         this.runAtEntity(entity, (task) -> {
-            if ((entity.isValid() && ((entity instanceof Player) && ((Player) entity).isOnline()))
-                    || (entity instanceof Projectile && !entity.isDead())) {
+            if (isValid(entity)) {
                 entity.teleport(location);
                 future.complete(true);
             } else {
@@ -457,5 +456,12 @@ public class SpigotImplementation implements PlatformScheduler {
         }
         
         return new WrappedBukkitTask((BukkitTask) nativeTask);
+    }
+
+    private boolean isValid(Entity entity) {
+        if (entity.isValid()) {
+            return !(entity instanceof Player) || ((Player) entity).isOnline();
+        }
+        return entity instanceof Projectile && !entity.isDead();
     }
 }
