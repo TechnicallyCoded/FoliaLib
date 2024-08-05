@@ -43,7 +43,4 @@ bin/
 
 # Custom
 /.idea/
-/gradle/
-gradlew
-gradlew.bat
 /target/
