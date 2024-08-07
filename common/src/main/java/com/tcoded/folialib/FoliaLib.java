@@ -1,7 +1,7 @@
 package com.tcoded.folialib;
 
 import com.tcoded.folialib.enums.ImplementationType;
-import com.tcoded.folialib.impl.ServerImplementation;
+import com.tcoded.folialib.impl.PlatformScheduler;
 import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +13,7 @@ public class FoliaLib {
     private final JavaPlugin plugin;
 
     private final ImplementationType implementationType;
-    private final ServerImplementation implementation;
+    private final PlatformScheduler scheduler;
 
     public FoliaLib(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -31,10 +31,10 @@ public class FoliaLib {
 
         // Apply the implementation based on the type
         this.implementationType = foundType;
-        this.implementation = this.createServerImpl(this.implementationType.getImplementationClassName());
+        this.scheduler = this.createServerImpl(this.implementationType.getImplementationClassName());
 
         // Check for valid implementation
-        if (this.implementation == null) {
+        if (this.scheduler == null) {
             throw new IllegalStateException(
                     "Failed to create server implementation. Please report this to the FoliaLib GitHub issues page. " +
                             "Forks of server software may not all be supported. If you are using an unofficial fork, " +
@@ -62,9 +62,17 @@ public class FoliaLib {
         return implementationType;
     }
 
+    /**
+     * @deprecated Use {@link #getImplType()} instead. (forRemoval = true, since = "0.3.5")
+     */
+    @Deprecated
     @SuppressWarnings("unused")
-    public ServerImplementation getImpl() {
-        return implementation;
+    public PlatformScheduler getImpl() {
+        return getScheduler();
+    }
+
+    public PlatformScheduler getScheduler() {
+        return scheduler;
     }
 
     @SuppressWarnings("unused")
@@ -105,11 +113,11 @@ public class FoliaLib {
 
     // Internal Utils
 
-    private ServerImplementation createServerImpl(String implName) {
+    private PlatformScheduler createServerImpl(String implName) {
         String basePackage = this.getClass().getPackage().getName() + ".impl.";
 
         try {
-            return (ServerImplementation) Class.forName(basePackage + implName)
+            return (PlatformScheduler) Class.forName(basePackage + implName)
                     .getConstructor(this.getClass())
                     .newInstance(this);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |

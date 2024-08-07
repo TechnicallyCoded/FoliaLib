@@ -8,8 +8,12 @@ import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedLegacyBukkitTask;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,7 +30,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class LegacySpigotImplementation implements ServerImplementation {
+public class LegacySpigotImplementation implements PlatformScheduler {
 
     private final JavaPlugin plugin;
     private final @NotNull BukkitScheduler scheduler;
@@ -37,7 +41,42 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
+    public boolean isOwnedByCurrentRegion(@NotNull Location location) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Block block) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public boolean isGlobalTickThread() {
+        return this.plugin.getServer().isPrimaryThread();
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -50,7 +89,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -68,12 +107,16 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -82,8 +125,8 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLater(consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLater(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -92,12 +135,16 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLaterAsynchronously(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -106,8 +153,8 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runLaterAsync(consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -159,7 +206,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
         return this.runNextTick(consumer);
     }
 
@@ -169,12 +216,16 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -183,8 +234,8 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtLocationLater(location, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -212,7 +263,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
@@ -225,12 +276,12 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
+    public @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback) {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTask(plugin, () -> {
-            if (entity.isValid()) {
+            if (isValid(entity)) {
                 consumer.accept(taskReference[0]);
                 future.complete(EntityTaskResult.SUCCESS);
             } else {
@@ -249,7 +300,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, @Nullable Runnable fallback, long delay) {
-        if (!entity.isValid()) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -257,20 +308,28 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
-        this.runAtEntityLater(entity, consumer, null, delay);
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
+        return this.runAtEntityLater(entity, consumer, null, delay);
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
-        if (!entity.isValid()) {
-            if (fallback != null) fallback.run();
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        if (!isValid(entity)) {
+            if (fallback != null) {
+                fallback.run();
+                future.complete(null);
+            }
         }
         WrappedTask[] taskReference = new WrappedTask[1];
 
         taskReference[0] = this.wrapTask(this.scheduler.runTaskLater(plugin, () -> {
             consumer.accept(taskReference[0]);
+            future.complete(null);
         }, delay));
+
+        return future;
     }
 
     @Override
@@ -279,8 +338,8 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
-        this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
+    public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit) {
+        return this.runAtEntityLater(entity, consumer, TimeConverter.toTicks(delay, unit));
     }
 
     @Override
@@ -290,7 +349,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay, long period) {
-        if (!entity.isValid()) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
             return null;
         }
@@ -304,7 +363,7 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
     @Override
     public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
-        if (!entity.isValid()) {
+        if (!isValid(entity)) {
             if (fallback != null) fallback.run();
         }
 
@@ -366,12 +425,17 @@ public class LegacySpigotImplementation implements ServerImplementation {
     }
 
     @Override
-    public CompletableFuture<Boolean> teleportAsync(Player player, Location location) {
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location) {
+        return this.teleportAsync(entity, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        this.runAtEntity(player, (task) -> {
-            if (player.isValid() && player.isOnline()) {
-                player.teleport(location);
+        this.runAtEntity(entity, (task) -> {
+            if (isValid(entity)) {
+                entity.teleport(location);
                 future.complete(true);
             } else {
                 future.complete(false);
@@ -416,5 +480,12 @@ public class LegacySpigotImplementation implements ServerImplementation {
 
         // Fallback to null
         return null;
+    }
+
+    private boolean isValid(Entity entity) {
+        if (entity.isValid()) {
+            return !(entity instanceof Player) || ((Player) entity).isOnline();
+        }
+        return entity instanceof Projectile && !entity.isDead();
     }
 }

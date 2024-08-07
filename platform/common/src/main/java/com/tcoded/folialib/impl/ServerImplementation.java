@@ -2,9 +2,13 @@ package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.enums.EntityTaskResult;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +18,109 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * @deprecated Use {@link PlatformScheduler} instead. (forRemoval = true, since = "0.3.5"). Deprecated in favor of better naming.
+ */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
+@Deprecated
 public interface ServerImplementation {
+
+    // ----- Check thread -----
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the chunk at the specified world and block
+     * position as included in the specified location.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param location Specified location, must have a non-null world
+     * @return true if the current thread is ticking the region that owns the chunk at the specified location
+     */
+    boolean isOwnedByCurrentRegion(@NotNull Location location);
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the chunks centered at the specified world
+     * and block position as included in the specified location within the
+     * specified square radius. Specifically, this function checks that every
+     * chunk with position x in [centerX - radius, centerX + radius] and
+     * position z in [centerZ - radius, centerZ + radius] is owned by the
+     * current ticking region.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param location Specified location, must have a non-null world
+     * @param squareRadiusChunks Specified square radius. Must be >= 0. Note that this parameter is not a squared radius, but rather a Chebyshev Distance
+     * @return true if the current thread is ticking the region that owns the chunks centered at the specified location within the specified square radius
+     */
+    boolean isOwnedByCurrentRegion(@NotNull Location location, int squareRadiusChunks);
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the chunk at the specified block position.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param block Specified block position
+     * @return true if the current thread is ticking the region that owns the chunk at the specified block position
+     */
+    boolean isOwnedByCurrentRegion(@NotNull Block block);
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the chunk at the specified world and chunk
+     * position.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param world Specified world
+     * @param chunkX Specified x-coordinate of the chunk position
+     * @param chunkZ Specified z-coordinate of the chunk position
+     * @return true if the current thread is ticking the region that owns the chunk at the specified world and chunk position
+     */
+    boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ);
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the chunks centered at the specified world
+     * and chunk position within the specified square radius. Specifically,
+     * this function checks that every chunk with position x in [centerX -
+     * radius, centerX + radius] and position z in [centerZ - radius, centerZ +
+     * radius] is owned by the current ticking region.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param world Specified world
+     * @param chunkX Specified x-coordinate of the chunk position
+     * @param chunkZ Specified z-coordinate of the chunk position
+     * @param squareRadiusChunks Specified square radius. Must be >= 0. Note that this parameter is not a squared radius, but rather a Chebyshev Distance.
+     * @return true if the current thread is ticking the region that owns the chunks centered at the specified world and chunk position within the specified square radius
+     */
+    boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ, int squareRadiusChunks);
+
+    /**
+     * Folia: Returns whether the current thread is ticking a region and that
+     * the region being ticked owns the specified entity. Note that this
+     * function is the only appropriate method of checking for ownership of an
+     * entity, as retrieving the entity's location is undefined unless the
+     * entity is owned by the current region.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @param entity Specified entity
+     * @return true if the current thread is ticking the region that owns the specified entity
+     */
+    boolean isOwnedByCurrentRegion(@NotNull Entity entity);
+
+    /**
+     * Folia: Returns whether the current thread is ticking the global region.
+     * Paper: Returns {@link Bukkit#isPrimaryThread()}
+     * Spigot: Returns {@link Bukkit#isPrimaryThread()}
+     *
+     * @return true if the current thread is ticking the global region
+     */
+    boolean isGlobalTickThread();
 
     // ----- Run now -----
 
@@ -24,18 +129,18 @@ public interface ServerImplementation {
      * Paper: Synced with the server main thread
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runNextTick(@NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Async
      * Paper: Async
      * Spigot: Async
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAsync(@NotNull Consumer<WrappedTask> consumer);
 
     // ----- Run Later -----
 
@@ -55,8 +160,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the server daylight cycle tick
@@ -76,8 +182,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Async
@@ -95,8 +202,9 @@ public interface ServerImplementation {
      * Spigot: Async
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Async
@@ -116,8 +224,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runLaterAsync(@NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     // ----- Global Timers -----
 
@@ -218,9 +327,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param location Location to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -240,8 +349,9 @@ public interface ServerImplementation {
      * @param location Location to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -263,8 +373,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the chunk of the location
@@ -323,9 +434,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntity(Entity entity, @NotNull Consumer<WrappedTask> consumer);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -333,9 +444,9 @@ public interface ServerImplementation {
      * Spigot: Synced with the server main thread
      * @param entity Entity to run the task at
      * @param consumer Task to run
-     * @return Future when the task is completed
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
+    @NotNull CompletableFuture<EntityTaskResult> runAtEntityWithFallback(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -367,8 +478,9 @@ public interface ServerImplementation {
      * @param entity Entity to run the task at
      * @param consumer Task to run
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -378,8 +490,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param fallback Fallback task to run when the entity is removed
      * @param delay Delay before execution in ticks
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -401,8 +514,9 @@ public interface ServerImplementation {
      * @param consumer Task to run
      * @param delay Delay before execution
      * @param unit Time unit
+     * @return Future when the task is completed, run on the same thread as the task
      */
-    void runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
+    @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay, TimeUnit unit);
 
     /**
      * Folia: Synced with the tick of the region of the entity (even if the entity moves)
@@ -526,10 +640,21 @@ public interface ServerImplementation {
     Player getPlayer(UUID uuid);
 
     /**
-     * Teleport a player to a location async
+     * Teleport an entity to a location async
+     * @param entity Entity to teleport
+     * @param location Location to teleport to
      * @return Future when the teleport is completed or failed
      */
-    CompletableFuture<Boolean> teleportAsync(Player player, Location location);
+    CompletableFuture<Boolean> teleportAsync(Entity entity, Location location);
+
+    /**
+     * Teleport an entity to a location async with a cause
+     * @param entity Entity to teleport
+     * @param location Location to teleport to
+     * @param cause Cause of the teleport
+     * @return Future when the teleport is completed or failed
+     */
+    CompletableFuture<Boolean> teleportAsync(Entity entity, Location location, PlayerTeleportEvent.TeleportCause cause);
 
     /**
      * Wraps a native task (Folia or Bukkit) into a WrappedTask
