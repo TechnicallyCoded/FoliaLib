@@ -122,27 +122,27 @@ Here are some examples of how to use the library:
 //   This should only be used for updating the following (see GlobalRegionScheduler.java for more info)
 //     - world day time, world game time, weather cycle, sleep night skipping, executing commands for console, and other misc
 // On a Spigot server, runNextTick() will run on the main thread
-foliaLib.getImpl().runNextTick(() -> {/* Code */});
+foliaLib.getScheduler().runNextTick(() -> {/* Code */});
 
 // In both cases, this method will run asynchronously
-foliaLib.getImpl().runAsync(() -> {/* Code */});
+foliaLib.getScheduler().runAsync(() -> {/* Code */});
 
 // On a Folia server, this method will run using the GlobalRegionScheduler
 // On a Spigot server, this method will run on the main thread
-foliaLib.getImpl().runTimer(() -> {/* Code */}, 1, 20); // Using ticks
-foliaLib.getImpl().runTimer(() -> {/* Code */}, 1, 20 * 50L, TimeUnit.MILLISECONDS); // Using TimeUnit
+foliaLib.getScheduler().runTimer(() -> {/* Code */}, 1, 20); // Using ticks
+foliaLib.getScheduler().runTimer(() -> {/* Code */}, 1, 20 * 50L, TimeUnit.MILLISECONDS); // Using TimeUnit
 
 // In both cases, this method will run asynchronously
-foliaLib.getImpl().runTimerAsync(() -> {/* Code */}, 1, 20); // Using ticks
-foliaLib.getImpl().runTimerAsync(() -> {/* Code */}, 1, 20 * 50L, TimeUnit.MILLISECONDS); // Using TimeUnit
+foliaLib.getScheduler().runTimerAsync(() -> {/* Code */}, 1, 20); // Using ticks
+foliaLib.getScheduler().runTimerAsync(() -> {/* Code */}, 1, 20 * 50L, TimeUnit.MILLISECONDS); // Using TimeUnit
 
 // On a folia server, this will run the code using the RegionScheduler that is appropriate for the location
 // On a spigot server, this will run the code on the main thread
-foliaLib.getImpl().runAtLocation(location, () -> {/* Code */});
+foliaLib.getScheduler().runAtLocation(location, () -> {/* Code */});
 
 // On a folia server, this will run the code using the EntityScheduler that is appropriate for the entity
 // On a spigot server, this will just run the code on the main thread
-foliaLib.getImpl().runAtEntity(entity, () -> {/* Code */});
+foliaLib.getScheduler().runAtEntity(entity, () -> {/* Code */});
 
 // AND MANY MORE OPTIONS...!
 ```
