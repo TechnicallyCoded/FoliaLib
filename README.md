@@ -1,76 +1,76 @@
-# FoliaLib
-[![GitHub Release](https://img.shields.io/github/release/technicallycoded/FoliaLib.svg?style=flat)]()
+# FoliaLib &nbsp; &nbsp; [![GitHub Release](https://img.shields.io/github/release/technicallycoded/FoliaLib.svg?style=flat)]()
 
-This project is not directly affiliated with Paper team or the Folia project.
+Developers and contributors like you make this project possible. This project is not directly affiliated with PaperMC. 
 
 <br/>
 
 ## Description
-This is a wrapper library for aiding in supporting the Folia Paper Fork. This library adds multiple scheduler options to use instead of the Bukkit or Folia native schedulers. Developers are expected to depend on this library and relocate the package to their own to prevent conflicts with other plugins.
+This is a wrapper library which aids developers to support the "Folia" Paper fork. This library adds multiple scheduler options to use instead of the Bukkit or Folia native schedulers. Developers are expected to depend on this library and relocate the package to their own to prevent conflicts with other plugins.
 
 Note: This project is still in its early stages and may make frequent breaking changes to the API. Additionally, I won't claim that this library is perfect; If you find any issues, please report them on the [issues page](https://github.com/TechnicallyCoded/FoliaLib/issues)
 
 <br/>
 
-## As a dependency
+## FoliaLib as a dependency
 
-### Gradle
+> [!WARNING]
+> You are expected to relocate the package `com.tcoded.folialib` to prevent conflicts with other plugins!  
+> Example configuration snippets demonstrating how to do this are available below for Maven and Gradle.
+
+> [!WARNING]
+> Ensure that you exclude FoliaLib from any `minimize` operation.
+
+### Gradle Dependency
 <details>
-  <summary>Click for example code Gradle configurations...</summary>
+  <summary>[Click to show Gradle example configurations]</summary>
 
-> [!WARNING]\
-> Ensure you relocate FoliaLib using the `relocate` operation in the `shadowJar` task to prevent conflicts with other plugins!
-
-> [!WARNING]\
-> Ensure that you exclude FoliaLib from the `minimize` operation!
 ```groovy
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1' // For up to Java 17
-    // id 'io.github.goooler.shadow' version '8.1.7' // For Java 21 or higher
+    // id 'io.github.goooler.shadow' version '8.1.7' // Uncomment for Java 21 or higher
 }
 
 repositories {
     maven {
-        name = "devmart-other"
-        url = "https://nexuslite.gcnt.net/repos/other/"
+        name = "jitpack"
+        url = "https://jitpack.io"
     }
 }
 
 dependencies {
-    implementation "com.tcoded:FoliaLib:[SEE TOP OF README]"
+    implementation "com.github.technicallycoded:FoliaLib:main-SNAPSHOT"
 }
 
 shadowJar {
-    // Change the line below to your plugin
-    relocate "com.tcoded.folialib", "MY.GROUP.PLUGIN-NAME.lib.folialib"
+    // !! MAKE SURE TO CHANGE THIS TO YOUR PLUGIN'S GROUP & PLUGIN NAME !!
+    relocate "com.tcoded.folialib", "CHANGE-THE-GROUP.CHANGE-THE-PLUGIN-NAME.lib.folialib"
 
     // Optional: If you use minimize, make sure you exclude FoliaLib
-    minimize {
-        exclude dependency("com.tcoded:FoliaLib:.*")
-    }
+    // Do not uncomment this if you don't know what you are doing
+    // minimize {
+    //     exclude dependency("com.tcoded:FoliaLib:.*")
+    // }
 }
 ```
 </details>
 
-### Maven
+### Maven Dependency
 <details>
-  <summary>Click for example code Maven configurations...</summary>
+  <summary>[Click to show Maven example configurations]</summary>
 
-> [!WARNING]\
-> You are expected to relocate the package "com.tcoded.folialib" to your own (ex: "me.steve.lib.folialib") to prevent conflicts with other plugins!
 ```xml
 <repositories>
     <repository>
-        <id>devmart-other</id>
-        <url>https://nexuslite.gcnt.net/repos/other/</url>
+        <id>jitpack</id>
+        <url>https://jitpack.io</url>
     </repository>
 </repositories>
 
 <dependencies>
     <dependency>
-        <groupId>com.tcoded</groupId>
+        <groupId>com.github.technicallycoded</groupId>
         <artifactId>FoliaLib</artifactId>
-        <version>[SEE TOP OF README]</version>
+        <version>main-SNAPSHOT</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -80,7 +80,7 @@ shadowJar {
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
             <executions>
                 <execution>
                     <phase>package</phase>
@@ -93,8 +93,8 @@ shadowJar {
                 <relocations>
                     <relocation>
                         <pattern>com.tcoded.folialib</pattern>
-                        <!-- !! MAKE SURE TO CHANGE THIS TO YOUR PLUGIN !! -->
-                        <shadedPattern>MY.GROUP.PLUGIN-NAME.lib.folialib</shadedPattern>
+                        <!-- !! MAKE SURE TO CHANGE THIS TO YOUR PLUGIN'S GROUP & PLUGIN NAME !! -->
+                        <shadedPattern>CHANGE-THE-GROUP.CHANGE-THE-PLUGIN-NAME.lib.folialib</shadedPattern>
                     </relocation>
                 </relocations>
             </configuration>
