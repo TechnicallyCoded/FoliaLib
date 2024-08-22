@@ -55,7 +55,7 @@ shadowJar {
     // Optional: If you use minimize, make sure you exclude FoliaLib
     // Do not uncomment this if you don't know what you are doing
     // minimize {
-    //     exclude dependency("com.tcoded:FoliaLib:.*")
+    //     exclude dependency("com.github.technicallycoded:FoliaLib:.*")
     // }
 }
 ```
