@@ -17,11 +17,14 @@ This project is still in its early stages and may make frequent breaking changes
 
 ## FoliaLib as a dependency
 
+> [!CAUTION]
+> The FoliaLib repository has moved! Please update your `pom.xml` or `build.gradle` file to use the Jitpack repository (see examples below).
+
 > [!WARNING]
 > You are expected to relocate the package `com.tcoded.folialib` to prevent conflicts with other plugins!  
 > Example configuration snippets demonstrating how to do this are available below for Maven and Gradle.
 
-> [!WARNING]
+> [!TIP]
 > Ensure that you exclude FoliaLib from any `minimize` operation.
 
 ### Gradle Dependency
