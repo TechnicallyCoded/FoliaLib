@@ -338,7 +338,12 @@ public class FoliaImplementation implements PlatformScheduler {
         CompletableFuture<EntityTaskResult> future = new CompletableFuture<>();
 
         ScheduledTask scheduledTask = entity.getScheduler().run(this.plugin, task -> {
-            consumer.accept(this.wrapTask(task));
+            try {
+                consumer.accept(this.wrapTask(task));
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+                return;
+            }
             future.complete(EntityTaskResult.SUCCESS);
         }, () -> {
             fallback.run();
