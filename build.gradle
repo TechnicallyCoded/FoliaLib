@@ -7,7 +7,7 @@ group 'com.tcoded'
 allprojects {
     apply plugin: 'java'
 
-    version = '0.4.3'
+    version = '0.4.4'
 
     repositories {
 
