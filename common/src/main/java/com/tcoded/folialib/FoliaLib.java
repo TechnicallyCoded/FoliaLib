@@ -4,7 +4,6 @@ import com.tcoded.folialib.enums.ImplementationType;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
