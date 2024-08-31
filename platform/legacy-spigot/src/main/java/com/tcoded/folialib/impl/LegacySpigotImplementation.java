@@ -14,7 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class LegacySpigotImplementation implements PlatformScheduler {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final @NotNull BukkitScheduler scheduler;
 
     public LegacySpigotImplementation(FoliaLib foliaLib) {
