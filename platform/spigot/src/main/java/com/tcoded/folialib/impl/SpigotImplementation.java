@@ -450,12 +450,16 @@ public class SpigotImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask wrapTask(Object nativeTask) {
-        if (!(nativeTask instanceof BukkitTask)) {
+        if (!(nativeTask instanceof BukkitTask) && !(nativeTask instanceof WrappedBukkitTask)) {
             String nativeTaskClassName = nativeTask == null ? null : nativeTask.getClass().getName();
             throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTaskClassName + " instead.");
         }
-        
-        return new WrappedBukkitTask((BukkitTask) nativeTask);
+
+        if (nativeTask instanceof WrappedBukkitTask) {
+            return (WrappedBukkitTask) nativeTask;
+        } else {
+            return new WrappedBukkitTask((BukkitTask) nativeTask);
+        }
     }
 
     private boolean isValid(Entity entity) {
