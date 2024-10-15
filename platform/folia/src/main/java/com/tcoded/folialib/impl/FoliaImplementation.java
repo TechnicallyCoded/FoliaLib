@@ -16,7 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class FoliaImplementation implements PlatformScheduler {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final GlobalRegionScheduler globalRegionScheduler;
     private final AsyncScheduler asyncScheduler;
 

@@ -3,19 +3,19 @@ package com.tcoded.folialib;
 import com.tcoded.folialib.enums.ImplementationType;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import com.tcoded.folialib.util.InvalidTickDelayNotifier;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
 public class FoliaLib {
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
     private final ImplementationType implementationType;
     private final PlatformScheduler scheduler;
 
-    public FoliaLib(JavaPlugin plugin) {
+    public FoliaLib(Plugin plugin) {
         this.plugin = plugin;
 
         // Find the implementation type based on the class names
@@ -95,7 +95,7 @@ public class FoliaLib {
         return implementationType == ImplementationType.UNKNOWN;
     }
 
-    public JavaPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 

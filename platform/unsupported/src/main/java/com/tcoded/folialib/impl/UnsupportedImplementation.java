@@ -1,7 +1,7 @@
 package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.logging.Logger;
 
@@ -11,7 +11,7 @@ public class UnsupportedImplementation extends LegacySpigotImplementation {
     public UnsupportedImplementation(FoliaLib foliaLib) {
         super(foliaLib);
 
-        JavaPlugin plugin = foliaLib.getPlugin();
+        Plugin plugin = foliaLib.getPlugin();
         Logger logger = plugin.getLogger();
 
         logger.warning(
