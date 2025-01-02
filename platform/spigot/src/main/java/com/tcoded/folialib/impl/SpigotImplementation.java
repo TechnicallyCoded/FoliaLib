@@ -2,6 +2,7 @@ package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.enums.EntityTaskResult;
+import com.tcoded.folialib.type.Ref;
 import com.tcoded.folialib.util.TimeConverter;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
@@ -289,18 +290,29 @@ public class SpigotImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, @Nullable Runnable fallback, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
+        // Entity is invalid. Complete the future and run the fallback if provided
         if (!isValid(entity)) {
+            future.complete(null);
+
             if (fallback != null) {
                 fallback.run();
-                future.complete(null);
             }
+
+            return future;
         }
-        else {
-            this.runLater(task -> {
-                consumer.accept(this.wrapTask(task));
+
+        this.runLater(task -> {
+            // Handle the case where the entity becomes invalid between scheduling and task execution
+            if (!isValid(entity)) {
+                if (fallback != null) fallback.run();
                 future.complete(null);
-            }, delay);
-        }
+                return;
+            }
+
+            // Everything is healthy, run the consumer and complete the future
+            consumer.accept(task);
+            future.complete(null);
+        }, delay);
 
         return future;
     }
@@ -326,8 +338,31 @@ public class SpigotImplementation implements PlatformScheduler {
             if (fallback != null) fallback.run();
             return null;
         }
-        return this.runTimer(runnable, delay, period);
-//        return this.wrapTask(this.scheduler.runTaskTimer(plugin, runnable, delay, period)); // todo: remove old
+
+        // This is called a magic trick...
+        // Close your eyes!
+        Ref<WrappedTask> wtRef = new Ref<>();
+
+        WrappedTask task = this.runTimer(() -> {
+            // Handle case where entity becomes invalid. The task should no longer run.
+            // We first check if the WrappedTask is non-null, since we never want to call the fallback
+            // multiple times: we need to be able to cancel the recurring task,
+            WrappedTask wt = wtRef.get();
+            if (wt != null && !isValid(entity)) {
+                wt.cancel();
+                // Run the fallback if provided
+                if (fallback != null) fallback.run();
+                return;
+            }
+
+            // Everything is healthy, run the task.
+            runnable.run();
+        }, delay, period);
+
+        wtRef.set(task);
+        // Ok, you can open your eyes again.
+
+        return task;
     }
 
     @Override
