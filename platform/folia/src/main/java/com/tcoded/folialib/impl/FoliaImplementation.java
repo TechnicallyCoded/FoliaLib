@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
+
 
 @SuppressWarnings("unused")
 public class FoliaImplementation implements PlatformScheduler {
@@ -562,14 +564,11 @@ public class FoliaImplementation implements PlatformScheduler {
     }
 
 	@Override
-    public WrappedTask wrapTask(Object nativeTask) {
-        if (nativeTask == null) {
-            return null;
-        }
+    public WrappedTask wrapTask(@NotNull Object nativeTask) {
+        requireNonNull(nativeTask, "nativeTask");
 
         if (!(nativeTask instanceof ScheduledTask)) {
-            String nativeTaskClassName = nativeTask.getClass().getName();
-            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTaskClassName + " instead.");
+            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
 
         return new WrappedFoliaTask((ScheduledTask) nativeTask);
