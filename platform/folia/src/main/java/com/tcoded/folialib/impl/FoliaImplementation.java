@@ -8,6 +8,7 @@ import com.tcoded.folialib.wrapper.task.WrappedFoliaTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
+import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.bukkit.Location;
@@ -35,11 +36,13 @@ public class FoliaImplementation implements PlatformScheduler {
 
     private final Plugin plugin;
     private final GlobalRegionScheduler globalRegionScheduler;
+    private final RegionScheduler regionScheduler;
     private final AsyncScheduler asyncScheduler;
 
     public FoliaImplementation(FoliaLib foliaLib) {
         this.plugin = foliaLib.getPlugin();
         this.globalRegionScheduler = plugin.getServer().getGlobalRegionScheduler();
+        this.regionScheduler = plugin.getServer().getRegionScheduler();
         this.asyncScheduler = plugin.getServer().getAsyncScheduler();
     }
 
@@ -234,7 +237,7 @@ public class FoliaImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runAtLocation(Location location, @NotNull Consumer<WrappedTask> consumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        this.plugin.getServer().getRegionScheduler().run(plugin, location, task -> {
+        this.regionScheduler.run(plugin, location, task -> {
             consumer.accept(this.wrapTask(task));
             future.complete(null);
         });
@@ -249,7 +252,7 @@ public class FoliaImplementation implements PlatformScheduler {
             delay = 1;
         }
         return this.wrapTask(
-                this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> runnable.run(), delay)
+                this.regionScheduler.runDelayed(plugin, location, task -> runnable.run(), delay)
         );
     }
 
@@ -261,7 +264,7 @@ public class FoliaImplementation implements PlatformScheduler {
             InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
             delay = 1;
         }
-        this.plugin.getServer().getRegionScheduler().runDelayed(plugin, location, task -> {
+        this.regionScheduler.runDelayed(plugin, location, task -> {
             consumer.accept(this.wrapTask(task));
             future.complete(null);
         }, delay);
@@ -290,7 +293,7 @@ public class FoliaImplementation implements PlatformScheduler {
             period = 1;
         }
         return this.wrapTask(
-                this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
+                this.regionScheduler.runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
         );
     }
 
@@ -304,7 +307,7 @@ public class FoliaImplementation implements PlatformScheduler {
             InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
             period = 1;
         }
-        this.plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay, period);
+        this.regionScheduler.runAtFixedRate(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay, period);
     }
 
 	@Override
