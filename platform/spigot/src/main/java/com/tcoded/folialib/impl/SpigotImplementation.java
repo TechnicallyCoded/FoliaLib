@@ -28,6 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
+
 @SuppressWarnings("unused")
 public class SpigotImplementation implements PlatformScheduler {
 
@@ -484,12 +486,12 @@ public class SpigotImplementation implements PlatformScheduler {
     }
 
     @Override
-    public WrappedTask wrapTask(Object nativeTask) {
+    public WrappedTask wrapTask(@NotNull Object nativeTask) {
+        requireNonNull(nativeTask, "nativeTask cannot be null");
         if (!(nativeTask instanceof BukkitTask)) {
-            String nativeTaskClassName = nativeTask == null ? null : nativeTask.getClass().getName();
-            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTaskClassName + " instead.");
+            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
-        
+
         return new WrappedBukkitTask((BukkitTask) nativeTask);
     }
 
