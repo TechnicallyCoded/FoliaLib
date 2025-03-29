@@ -48,7 +48,7 @@ public class FoliaLib {
         if (this.getClass().getName().startsWith(originalLocation)) {
             Logger logger = this.plugin.getLogger();
             logger.severe("****************************************************************");
-            logger.severe("FoliaLib is not be relocated correctly! This will cause conflicts");
+            logger.severe("FoliaLib is not relocated correctly! This will cause conflicts");
             logger.severe("with other plugins using FoliaLib. Please contact the developers");
             logger.severe(String.format("of '%s' and inform them of this issue immediately!", this.plugin.getDescription().getName()));
             logger.severe("****************************************************************");
