@@ -480,8 +480,8 @@ public class SpigotImplementation implements PlatformScheduler {
 
         this.runAtEntity(entity, (task) -> {
             if (isValid(entity)) {
-                entity.teleport(location);
-                future.complete(true);
+                boolean result = entity.teleport(location);
+                future.complete(result);
             } else {
                 future.complete(false);
             }
