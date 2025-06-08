@@ -1,5 +1,6 @@
 plugins {
     id("maven-publish")
+    id("java")
 }
 
 group = "com.tcoded"
@@ -44,10 +45,10 @@ allprojects {
     tasks.test {
         useJUnitPlatform()
     }
-}
 
-tasks.assemble {
-    dependsOn(tasks.clean)
+    tasks.compileJava {
+        dependsOn(tasks.clean)
+    }
 }
 
 subprojects.forEach { subproject ->
@@ -55,60 +56,64 @@ subprojects.forEach { subproject ->
 }
 
 tasks.register<Jar>("allJar") {
-    dependsOn("compileJava", "jar", subprojects.tasks["build"])
+    dependsOn(tasks.clean)
+    dependsOn(subprojects.map { it.tasks.clean })
+    dependsOn(tasks.compileJava)
+    dependsOn(tasks.jar)
+    dependsOn(subprojects.map { it.tasks.build })
+
     subprojects.forEach { subproject ->
-        from(subproject.configurations.archives.get().allArtifacts.files.map {
+        from(subproject.tasks.jar.get().outputs.files.map {
             zipTree(it)
         })
     }
 }
 
+val allJar: Task = tasks.named("allJar").get();
+
 artifacts {
-    add("archives", tasks.named("allJar").get())
+    add("archives", allJar)
 }
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
+        create<MavenPublication>("mavenJavaLocal") {
+            artifact(allJar.outputs.files.singleFile)
         }
     }
 }
 
-tasks.named("generateMetadataFileForMavenJavaPublication") {
-    dependsOn(tasks.named("allJar"))
+tasks.named("generateMetadataFileForMavenJavaLocalPublication") {
+    dependsOn(allJar)
 }
 
-val enablePublishing: Boolean = project.findProperty("enablePublishing")?.toString()?.toBoolean() == true
+val enablePublishing: Boolean = project.findProperty("enableUploadPublish")?.toString()?.toBoolean() == true
 
 if (enablePublishing) {
     publishing {
-        publications {
-            create<MavenPublication>("mavenJava") {
-                from(components["java"])
-            }
-        }
-
         repositories {
             maven {
                 name = "reposilite"
                 url = uri("https://repo.tcoded.com/releases")
 
                 credentials {
-                    username = System.getenv("REPOSILITE_USER")
-                            ?: error("Environment variable REPOSILITE_USER is not set")
-                    password = System.getenv("REPOSILITE_PASS")
-                            ?: error("Environment variable REPOSILITE_PASS is not set")
+                    username = project.findProperty("REPOSILITE_USER")?.toString()
+                        ?: System.getenv("REPOSILITE_USER")
+                        ?: error("REPOSILITE_USER property or environment variable is not set")
+                    password = project.findProperty("REPOSILITE_PASS")?.toString()
+                        ?: System.getenv("REPOSILITE_PASS")
+                        ?: error("REPOSILITE_PASS property or environment variable is not set")
                 }
 
                 authentication {
-                    create<BasicAuthentication>("basic")
+                    register<BasicAuthentication>("basic")
                 }
             }
         }
     }
 
-    tasks.assemble {
-        dependsOn(tasks.named("publishToMavenLocal"))
+    tasks.named("publishMavenJavaLocalPublicationToReposiliteRepository") {
+        dependsOn(tasks.jar)
+        dependsOn(allJar)
     }
 }
