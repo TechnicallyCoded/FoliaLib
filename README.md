@@ -33,8 +33,8 @@ This project is still in its early stages and may make frequent breaking changes
 
 ```groovy
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1' // For up to Java 17
-    // id 'io.github.goooler.shadow' version '8.1.7' // Uncomment for Java 21 or higher
+    id("com.github.johnrengelman.shadow") version "8.1.1" // For up to Java 17
+    // id("com.gradleup.shadow") version "9.0.0-beta12" // Uncomment for Java 21 or higher
 }
 
 repositories {
@@ -45,12 +45,12 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.technicallycoded:FoliaLib:main-SNAPSHOT"
+    implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
 }
 
 shadowJar {
     // !! MAKE SURE TO CHANGE THIS TO YOUR PLUGIN'S GROUP & PLUGIN NAME !!
-    relocate "com.tcoded.folialib", "CHANGE-THE-GROUP.CHANGE-THE-PLUGIN-NAME.lib.folialib"
+    relocate("com.tcoded.folialib", "CHANGE-THE-GROUP.CHANGE-THE-PLUGIN-NAME.lib.folialib")
 
     // Optional: If you use minimize, make sure you exclude FoliaLib
     // Do not uncomment this if you don't know what you are doing
