@@ -661,5 +661,5 @@ public interface ServerImplementation {
      * @param nativeTask The native task object
      * @return WrappedTask instance
      */
-    WrappedTask wrapTask(Object nativeTask);
+    WrappedTask wrapTask(@NotNull Object nativeTask);
 }

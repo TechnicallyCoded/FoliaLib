@@ -2,6 +2,7 @@ package com.tcoded.folialib;
 
 import com.tcoded.folialib.enums.ImplementationType;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import com.tcoded.folialib.util.FoliaLibOptions;
 import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.Plugin;
 
@@ -14,9 +15,21 @@ public class FoliaLib {
 
     private final ImplementationType implementationType;
     private final PlatformScheduler scheduler;
+    private FoliaLibOptions options;
+    private InvalidTickDelayNotifier invalidTickDelayNotifier;
 
     public FoliaLib(Plugin plugin) {
+        this(plugin, new FoliaLibOptions());
+    }
+
+    public FoliaLib(Plugin plugin, FoliaLibOptions customOptions) {
         this.plugin = plugin;
+
+        // Initialize options
+        this.options = customOptions;
+
+        // Initialize the invalid tick delay notifier
+        this.invalidTickDelayNotifier = new InvalidTickDelayNotifier(plugin.getLogger(), this.options);
 
         // Find the implementation type based on the class names
         ImplementationType foundType = ImplementationType.UNKNOWN;
@@ -48,7 +61,7 @@ public class FoliaLib {
         if (this.getClass().getName().startsWith(originalLocation)) {
             Logger logger = this.plugin.getLogger();
             logger.severe("****************************************************************");
-            logger.severe("FoliaLib is not be relocated correctly! This will cause conflicts");
+            logger.severe("FoliaLib is not relocated correctly! This will cause conflicts");
             logger.severe("with other plugins using FoliaLib. Please contact the developers");
             logger.severe(String.format("of '%s' and inform them of this issue immediately!", this.plugin.getDescription().getName()));
             logger.severe("****************************************************************");
@@ -101,17 +114,39 @@ public class FoliaLib {
 
     // Public Options
 
+    /**
+     * Use {@link FoliaLib#getOptions()} instead.
+     */
     @SuppressWarnings("unused")
+    @Deprecated
     public void disableInvalidTickValueWarning() {
-        InvalidTickDelayNotifier.disableNotifications = true;
+        getOptions().disableNotifications();
     }
 
+    /**
+     * Use {@link FoliaLib#getOptions()} instead.
+     */
     @SuppressWarnings("unused")
+    @Deprecated
     public void enableInvalidTickValueDebug() {
-        InvalidTickDelayNotifier.debugMode = true;
+        getOptions().enableInvalidTickDebugMode();
+    }
+
+    public FoliaLibOptions getOptions() {
+        return this.options;
     }
 
     // Internal Utils
+
+    /**
+     * This is an internal tool, do NOT use!
+     * You're probably looking for {@link FoliaLib#getOptions()} instead.
+     * **/
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    public InvalidTickDelayNotifier getInvalidTickDelayNotifier() {
+        return this.invalidTickDelayNotifier;
+    }
 
     private PlatformScheduler createServerImpl(String implName) {
         String basePackage = this.getClass().getPackage().getName() + ".impl.";

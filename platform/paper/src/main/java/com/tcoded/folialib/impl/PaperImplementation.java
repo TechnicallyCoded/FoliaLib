@@ -12,10 +12,12 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 public class PaperImplementation extends SpigotImplementation {
 
+    private final FoliaLib foliaLib;
     private Method teleportAsyncMethod;
 
     public PaperImplementation(FoliaLib foliaLib) {
         super(foliaLib);
+        this.foliaLib = foliaLib;
 
         // Pre-reflect the teleportAsync method
         if (ImplementationTestsUtil.isAsyncTeleportSupported()) {

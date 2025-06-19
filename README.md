@@ -39,13 +39,13 @@ plugins {
 
 repositories {
     maven {
-        name = "jitpack"
-        url = "https://jitpack.io"
+        name = "tcoded-releases"
+        url = "https://repo.tcoded.com/releases"
     }
 }
 
 dependencies {
-    implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
+    implementation("com.tcoded:FoliaLib:SET_VERSION_HERE")
 }
 
 shadowJar {
@@ -55,7 +55,7 @@ shadowJar {
     // Optional: If you use minimize, make sure you exclude FoliaLib
     // Do not uncomment this if you don't know what you are doing
     // minimize {
-    //     exclude dependency("com.github.technicallycoded:FoliaLib:.*")
+    //     exclude dependency("com.tcoded:FoliaLib:.*")
     // }
 }
 ```
@@ -68,16 +68,16 @@ shadowJar {
 ```xml
 <repositories>
     <repository>
-        <id>jitpack</id>
-        <url>https://jitpack.io</url>
+        <id>tcoded-releases</id>
+        <url>https://repo.tcoded.com/releases</url>
     </repository>
 </repositories>
 
 <dependencies>
     <dependency>
-        <groupId>com.github.technicallycoded</groupId>
+        <groupId>com.tcoded</groupId>
         <artifactId>FoliaLib</artifactId>
-        <version>main-SNAPSHOT</version>
+        <version>SET_VERSION_HERE</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>

@@ -2,6 +2,7 @@ package com.tcoded.folialib.impl;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.enums.EntityTaskResult;
+import com.tcoded.folialib.util.FoliaLibOptions;
 import com.tcoded.folialib.util.ImplementationTestsUtil;
 import com.tcoded.folialib.util.TimeConverter;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
@@ -29,13 +30,19 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
+
 @SuppressWarnings("unused")
 public class LegacySpigotImplementation implements PlatformScheduler {
 
+    private final FoliaLib foliaLib;
+    private final FoliaLibOptions options;
     private final Plugin plugin;
     private final @NotNull BukkitScheduler scheduler;
 
     public LegacySpigotImplementation(FoliaLib foliaLib) {
+        this.foliaLib = foliaLib;
+        this.options = foliaLib.getOptions();
         this.plugin = foliaLib.getPlugin();
         this.scheduler = plugin.getServer().getScheduler();
     }
@@ -435,8 +442,8 @@ public class LegacySpigotImplementation implements PlatformScheduler {
 
         this.runAtEntity(entity, (task) -> {
             if (isValid(entity)) {
-                entity.teleport(location);
-                future.complete(true);
+                boolean result = entity.teleport(location);
+                future.complete(result);
             } else {
                 future.complete(false);
             }
@@ -446,10 +453,10 @@ public class LegacySpigotImplementation implements PlatformScheduler {
     }
 
     @Override
-    public WrappedTask wrapTask(Object nativeTask) {
+    public WrappedTask wrapTask(@NotNull Object nativeTask) {
+        requireNonNull(nativeTask, "nativeTask cannot be null");
         if (!(nativeTask instanceof BukkitTask)) {
-            String nativeTaskClassName = nativeTask == null ? null : nativeTask.getClass().getName();
-            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTaskClassName + " instead.");
+            throw new IllegalArgumentException("The nativeTask provided must be a BukkitTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
 
         return ImplementationTestsUtil.isCancelledSupported() ?
@@ -483,9 +490,15 @@ public class LegacySpigotImplementation implements PlatformScheduler {
     }
 
     private boolean isValid(Entity entity) {
+        boolean skipValidCheck = !this.options.useIsValidOnNonFolia();
+        if (skipValidCheck) {
+            return true; // Skip the valid check if the option is disabled
+        }
+
         if (entity.isValid()) {
             return !(entity instanceof Player) || ((Player) entity).isOnline();
         }
+
         return entity instanceof Projectile && !entity.isDead();
     }
 }

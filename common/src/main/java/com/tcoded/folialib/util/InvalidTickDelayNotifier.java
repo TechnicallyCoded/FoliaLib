@@ -6,14 +6,19 @@ import java.util.logging.Logger;
 
 public class InvalidTickDelayNotifier {
 
-    public static boolean disableNotifications = false;
-    public static boolean debugMode = false;
+    private boolean notified = false;
 
-    private static boolean notified = false;
+    private final Logger logger;
+    private final FoliaLibOptions options;
 
-    public static void notifyOnce(@NotNull Logger logger, long span) {
+    public InvalidTickDelayNotifier(@NotNull Logger logger, @NotNull FoliaLibOptions options) {
+        this.logger = logger;
+        this.options = options;
+    }
+
+    public void notifyOnce(long span) {
         // Check if the notification was already sent or if the notifications were manually disabled
-        if (notified || disableNotifications) return;
+        if (notified || options.isDisableNotifications()) return;
         notified = true;
 
         // Send a warning message if this hasn't been sent before
@@ -25,7 +30,7 @@ public class InvalidTickDelayNotifier {
                 "Plugin developers can disable this warning or enable debug mode to location the source of this warning.");
 
         // If the user enables debug mode, print the stack trace
-        if (debugMode) {
+        if (options.isInvalidTickDebugMode()) {
             new Exception("Debugging information to track down the location of the invalid tick input value")
                     .printStackTrace();
         }

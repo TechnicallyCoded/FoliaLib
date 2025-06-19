@@ -1,9 +1,9 @@
-group = 'com.tcoded.folialib.platform'
+group = "com.tcoded.folialib.platform"
 
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.9.4-R0.1-SNAPSHOT")
 
     implementation(project(":common"))
     implementation(project(":platform:common"))
-    implementation implementation(project(':platform:spigot',))
+    implementation(project(":platform:legacy-spigot"))
 }

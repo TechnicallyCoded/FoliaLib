@@ -30,20 +30,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
+
 
 @SuppressWarnings("unused")
 public class FoliaImplementation implements PlatformScheduler {
 
+    private final FoliaLib foliaLib;
     private final Plugin plugin;
     private final GlobalRegionScheduler globalRegionScheduler;
     private final RegionScheduler regionScheduler;
     private final AsyncScheduler asyncScheduler;
+    private final InvalidTickDelayNotifier tickNotifier;
 
     public FoliaImplementation(FoliaLib foliaLib) {
+        this.foliaLib = foliaLib;
         this.plugin = foliaLib.getPlugin();
         this.globalRegionScheduler = plugin.getServer().getGlobalRegionScheduler();
         this.regionScheduler = plugin.getServer().getRegionScheduler();
         this.asyncScheduler = plugin.getServer().getAsyncScheduler();
+        // noinspection deprecation - It's our own internal API use. Ignore the warning.
+        this.tickNotifier = this.foliaLib.getInvalidTickDelayNotifier();
     }
 
     @Override
@@ -107,10 +114,7 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public WrappedTask runLater(@NotNull Runnable runnable, long delay) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         return this.wrapTask(this.globalRegionScheduler.runDelayed(plugin, task -> runnable.run(), delay));
     }
 
@@ -118,10 +122,7 @@ public class FoliaImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runLater(@NotNull Consumer<WrappedTask> consumer, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         this.globalRegionScheduler.runDelayed(plugin, task -> {
             consumer.accept(this.wrapTask(task));
             future.complete(null);
@@ -171,14 +172,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public WrappedTask runTimer(@NotNull Runnable runnable, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         return this.wrapTask(
                 this.globalRegionScheduler.runAtFixedRate(plugin, task -> runnable.run(), delay, period)
         );
@@ -186,14 +181,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public void runTimer(@NotNull Consumer<WrappedTask> consumer, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         this.globalRegionScheduler.runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), delay, period);
     }
 
@@ -247,10 +236,7 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public WrappedTask runAtLocationLater(Location location, @NotNull Runnable runnable, long delay) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         return this.wrapTask(
                 this.regionScheduler.runDelayed(plugin, location, task -> runnable.run(), delay)
         );
@@ -260,10 +246,7 @@ public class FoliaImplementation implements PlatformScheduler {
     public @NotNull CompletableFuture<Void> runAtLocationLater(Location location, @NotNull Consumer<WrappedTask> consumer, long delay) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         this.regionScheduler.runDelayed(plugin, location, task -> {
             consumer.accept(this.wrapTask(task));
             future.complete(null);
@@ -284,14 +267,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public WrappedTask runAtLocationTimer(Location location, @NotNull Runnable runnable, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         return this.wrapTask(
                 this.regionScheduler.runAtFixedRate(plugin, location, task -> runnable.run(), delay, period)
         );
@@ -299,14 +276,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public void runAtLocationTimer(Location location, @NotNull Consumer<WrappedTask> consumer, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         this.regionScheduler.runAtFixedRate(plugin, location, task -> consumer.accept(this.wrapTask(task)), delay, period);
     }
 
@@ -362,14 +333,11 @@ public class FoliaImplementation implements PlatformScheduler {
 
 	@Override
     public WrappedTask runAtEntityLater(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         return this.wrapTask(entity.getScheduler().runDelayed(plugin, task -> runnable.run(), fallback, delay));
     }
 
-	@Override
+    @Override
     public @NotNull CompletableFuture<Void> runAtEntityLater(Entity entity, @NotNull Consumer<WrappedTask> consumer, long delay) {
         return this.runAtEntityLater(entity, consumer, null, delay);
     }
@@ -387,10 +355,7 @@ public class FoliaImplementation implements PlatformScheduler {
             };
         }
 
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
+        delay = ensureValidDuration(delay);
         entity.getScheduler().runDelayed(plugin, task -> {
             consumer.accept(this.wrapTask(task));
             future.complete(null);
@@ -416,14 +381,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
     @Override
     public WrappedTask runAtEntityTimer(Entity entity, @NotNull Runnable runnable, Runnable fallback, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         return this.wrapTask(
                 entity.getScheduler().runAtFixedRate(plugin, task -> runnable.run(), fallback, delay, period)
         );
@@ -436,14 +395,8 @@ public class FoliaImplementation implements PlatformScheduler {
 
     @Override
     public void runAtEntityTimer(Entity entity, @NotNull Consumer<WrappedTask> consumer, Runnable fallback, long delay, long period) {
-        if (delay <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), delay);
-            delay = 1;
-        }
-        if (period <= 0) {
-            InvalidTickDelayNotifier.notifyOnce(plugin.getLogger(), period);
-            period = 1;
-        }
+        delay = ensureValidDuration(delay);
+        period = ensureValidDuration(period);
         entity.getScheduler().runAtFixedRate(plugin, task -> consumer.accept(this.wrapTask(task)), fallback, delay, period);
     }
 
@@ -562,16 +515,22 @@ public class FoliaImplementation implements PlatformScheduler {
     }
 
 	@Override
-    public WrappedTask wrapTask(Object nativeTask) {
-        if (nativeTask == null) {
-            return null;
-        }
+    public WrappedTask wrapTask(@NotNull Object nativeTask) {
+        requireNonNull(nativeTask, "nativeTask");
 
         if (!(nativeTask instanceof ScheduledTask)) {
-            String nativeTaskClassName = nativeTask.getClass().getName();
-            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTaskClassName + " instead.");
+            throw new IllegalArgumentException("The nativeTask provided must be a ScheduledTask. Got: " + nativeTask.getClass().getName() + " instead.");
         }
 
         return new WrappedFoliaTask((ScheduledTask) nativeTask);
     }
+
+    private long ensureValidDuration(long duration) {
+        if (duration <= 0) {
+            this.tickNotifier.notifyOnce(duration);
+            return 1;
+        }
+        return duration;
+    }
+
 }
