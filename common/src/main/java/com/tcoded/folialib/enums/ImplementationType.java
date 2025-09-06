@@ -22,7 +22,9 @@ public enum ImplementationType {
     FOLIA (
             "FoliaImplementation",
             new Supplier[0],
-            "io.papermc.paper.threadedregions.RegionizedServer"
+            "io.papermc.paper.threadedregions.RegionizedServer",
+            "ca.spottedleaf.moonrise.common.util.TickThread",
+            "ca.spottedleaf.moonrise.paper.PaperHooks"
     ),
     PAPER (
             "PaperImplementation",
