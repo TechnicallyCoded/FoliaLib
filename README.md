@@ -33,7 +33,7 @@ This project is still in its early stages and may make frequent breaking changes
 
 ```groovy
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1" // For up to Java 17
+    id("com.gradleup.shadow") version "9.4.1" // For up to Java 17
     // id("com.gradleup.shadow") version "9.0.0-beta12" // Uncomment for Java 21 or higher
 }
 
