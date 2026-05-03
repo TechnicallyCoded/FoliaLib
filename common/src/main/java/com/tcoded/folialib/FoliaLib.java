@@ -58,7 +58,7 @@ public class FoliaLib {
 
         // Check for valid relocation
         // Runtime replace commas to avoid compiler relocations changing this string too
-        // Not beautiful, but functional}
+        // Not beautiful, but functional
 
         String originalLocation = "com,tcoded,folialib,".replace(",", ".");
         // Below it will check if the library was loaded by Paper's MavenLibraryResolver.
