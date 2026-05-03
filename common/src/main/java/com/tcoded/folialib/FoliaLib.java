@@ -7,6 +7,8 @@ import com.tcoded.folialib.util.InvalidTickDelayNotifier;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public class FoliaLib {
@@ -58,7 +60,17 @@ public class FoliaLib {
         // Runtime replace commas to avoid compiler relocations changing this string too
         // Not beautiful, but functional
         String originalLocation = "com,tcoded,folialib,".replace(",", ".");
-        if (this.getClass().getName().startsWith(originalLocation)) {
+        boolean isNotRelocated = this.getClass().getName().startsWith(originalLocation);
+
+        // Below it will check if the library was loaded by Paper's MavenLibraryResolver.
+        String path = null;
+        try {
+            URL loc = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+            if (loc != null) path = loc.toURI().getPath();
+        } catch (URISyntaxException ignored) {}
+        boolean isResolvedByPaper = path != null && path.contains("/libraries/") && this.isPaper();
+
+        if (isNotRelocated && !isResolvedByPaper) {
             Logger logger = this.plugin.getLogger();
             logger.severe("****************************************************************");
             logger.severe("FoliaLib is not relocated correctly! This will cause conflicts");
