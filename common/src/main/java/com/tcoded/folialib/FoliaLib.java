@@ -67,7 +67,7 @@ public class FoliaLib {
             URL loc = this.getClass().getProtectionDomain().getCodeSource().getLocation();
             if (loc != null) path = loc.toURI().getPath();
         } catch (URISyntaxException ignored) {}
-        boolean isResolvedByPaper = path != null && path.contains("/libraries/");
+        boolean isResolvedByPaper = path != null && path.contains("/libraries/") && this.isPaper();
         if (this.getClass().getName().startsWith(originalLocation) && !isResolvedByPaper) {
             Logger logger = this.plugin.getLogger();
             logger.severe("****************************************************************");
